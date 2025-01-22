@@ -4,7 +4,7 @@ import { Button } from '../Button'
 
 import styles from './index.module.css'
 
-export const Form = memo(({ value, onChange, onCancelClick, onSubmit }) => {
+export const Form = memo(({ value,editTodoId, onChange, onCancelClick, onSubmit }) => {
   return (
     <form onSubmit={onSubmit} className={styles.form}>
       <div className={styles['input-field']}>
@@ -31,7 +31,7 @@ export const Form = memo(({ value, onChange, onCancelClick, onSubmit }) => {
           className={styles['cancel-button']}
           onClick={onCancelClick}
         >
-          キャンセル
+        {editTodoId ? '保存' : 'タスクを追加'} {/* キャンセル 元の文字*/}
         </Button>
         <Button
           type='submit'
@@ -51,7 +51,12 @@ Form.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
   }).isRequired,
+  editTodoId: PropTypes.string, // 追加
   onChange: PropTypes.func.isRequired,
   onCancelClick: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+}
+// ↓ 追加
+Form.defaultProps = {
+  editTodoId: '',
 }

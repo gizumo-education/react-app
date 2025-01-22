@@ -1,122 +1,42 @@
-// import { useState,useEffect,useCallback } from 'react' // useStateを追加
-// import { axios } from '../../../utils/axiosConfig' // 追加
+import { useEffect, useState, useCallback } from 'react' // useStateを追加
+import { axios } from '../../../utils/axiosConfig' // 追加
 
-// import { Layout } from '../../ui/Layout'
-// import { ListItem } from '../../ui/ListItem' // 追加
+import { Layout } from '../../ui/Layout'
+import {ListItem} from '../../ui/ListItem'
+import {Button} from '../../ui/Button'//追加
+import {Icon} from '../../ui/Icon'//追加
+import {Form} from '../../ui/Form'
 
-// import { Button } from '../../ui/Button' // 追加
-// import { Icon } from '../../ui/Icon' // 追加
-// import { Form } from '../../ui/Form' // 追加
-
-// import styles from './index.module.css'
-
-// export const Top = () => {
-//   const [inputValues, setInputValues] = useState({
-//     title: '',
-//     description: '',
-//   })
-//   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false) // 追加
-//   const [todos, setTodos] = useState([]) // 追加
-//   const handleAddTaskButtonClick = useCallback(() => {
-//     setIsAddTaskFormOpen(true)
-//   }, [])
-//   const handleCancelButtonClick = useCallback(() => {
-//     setIsAddTaskFormOpen(false)
-//   }, [])
-//   const handleInputChange = useCallback((event) => {
-//     const { name, value } = event.target
-//     setInputValues((prev) => ({ ...prev, [name]: value }))
-//   }, [])
-//   const handleCreateTodoSubmit = useCallback(
-//     (event) => {
-//       event.preventDefault()
-//       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-//         console.log(data)
-//       })
-//     },
-//     [inputValues]
-//   )
-//   useEffect(() => {
-//     axios.get('http://localhost:3000/todo').then(({ data }) => {
-//       console.log(data)
-//       setTodos(data); // データをtodosに設定
-//     })
-//     .catch((error) => {
-//       console.error('データの取得に失敗しました:', error);
-//     })
-//   }, [])
-
-//   return (
-//     <Layout>
-//       <h1 className={styles.heading}>ToDo一覧</h1>
-//       <ul className={styles.list}>
-//         {todos.map((todo) => {
-//           return <ListItem key={todo.id} todo={todo} />
-//         })}
-//          {/* ↓ 追加 */}
-//       <li>
-//       {isAddTaskFormOpen ? (
-//   <Form
-//     value={inputValues}
-//     onChange={handleInputChange}
-//     onCancelClick={handleCancelButtonClick}
-//     onSubmit={handleCreateTodoSubmit} // onSubmitを追加
-//   />
-//         ) : (
-//           <Button
-//           buttonStyle='indigo-blue'
-//           onClick={handleAddTaskButtonClick} //追加
-//           className={styles['add-task']}>
-//             <Icon
-//               iconName='plus'
-//               color='orange'
-//               size='medium'
-//               className={styles['plus-icon']}
-//             />
-//             タスクを追加
-//           </Button>
-//         )}
-//       </li>
-//       </ul>
-//     </Layout>
-//   )
-// }
-
-import { useState, useEffect, useCallback } from 'react';
-import { axios } from '../../../utils/axiosConfig';
-
-import { Layout } from '../../ui/Layout';
-import { ListItem } from '../../ui/ListItem';
-import { Button } from '../../ui/Button';
-import { Icon } from '../../ui/Icon';
-import { Form } from '../../ui/Form';
-
-import styles from './index.module.css';
+import styles from './index.module.css'
 
 export const Top = () => {
-  const [inputValues, setInputValues] = useState({
+  const [todos,setTodos]= useState([])//追加
+  const [editTodoId, setEditTodoId] = useState('') // 編集する際のID格納場。
+  const [inputValues, setInputValues] = useState({ //追加フォーム用
     title: '',
     description: '',
-  });
-  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false);
-  const [todos, setTodos] = useState([]);
-
+  })
+  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)//ToDoの追加フォームの表示・非表示を切り替えるため
+  
   const handleAddTaskButtonClick = useCallback(() => {
-    setIsAddTaskFormOpen(true);
-  }, []);
+    setInputValues({ title: '', description: '' }) // 追加
+    setEditTodoId('') // 追加
+    setIsAddTaskFormOpen(true)
+  }, []) //タスクを追加ボタンを押した後の処理内容
 
   const handleCancelButtonClick = useCallback(() => {
-    setIsAddTaskFormOpen(false);
-  }, []);
+    setEditTodoId('') // 追加
+    setIsAddTaskFormOpen(false)
+  }, [])//キャンセルボタン用の処理
 
   const handleInputChange = useCallback((event) => {
-    const { name, value } = event.target;
-    setInputValues((prev) => ({ ...prev, [name]: value }));
-  }, []);
+    const { name, value } = event.target
+    setInputValues((prev) => ({ ...prev, [name]: value }))
+  }, [])//タスクなどに文字を反映できるようにする処理。
 
   const handleCreateTodoSubmit = useCallback(
     (event) => {
-      event.preventDefault();
+      event.preventDefault()
       axios.post('http://localhost:3000/todo', inputValues)
         .then(({ data }) => {
           // ToDoリストを新しいアイテムで更新
@@ -133,48 +53,89 @@ export const Top = () => {
     [inputValues]
   );
 
-  useEffect(() => {
-    axios.get('http://localhost:3000/todo')
+  const handleEditedTodoSubmit = useCallback((event) => {
+    event.preventDefault();
+    axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
       .then(({ data }) => {
-        setTodos(data);
+        setTodos((prevTodos) => prevTodos.map(todo =>
+          todo.id === editTodoId ? { ...todo, ...data } : todo
+        ));
+        setEditTodoId('');
+        setInputValues({ title: '', description: '' });
       })
       .catch((error) => {
-        console.error('データの取得に失敗しました:', error);
+        console.error('ToDoの編集に失敗しました:', error);
       });
-  }, []);
+  }, [editTodoId, inputValues]);
+
+  const handleEditButtonClick = useCallback((id) => {
+      setIsAddTaskFormOpen(false)
+      setEditTodoId(id)
+      // ↓ 追加
+      const targetTodo = todos.find((todo) => todo.id === id)
+      setInputValues({
+        title: targetTodo.title,
+        description: targetTodo.description,
+      })
+      // ↑ 追加
+    },
+    [todos] // 依存配列にtodosを追加
+  )
 
   return (
     <Layout>
       <h1 className={styles.heading}>ToDo一覧</h1>
+    {/* // ↓ 追加 */}
       <ul className={styles.list}>
-        {todos.map((todo) => (
-          <ListItem key={todo.id} todo={todo} />
-        ))}
+        {todos.map((todo) => {
+          //もしエディットIDがtodoIDと同じだったときに実行する処理。
+          if (editTodoId === todo.id) {
+            return (
+              <li key={todo.id}>
+                <Form
+                  value={inputValues}
+                  editTodoId={editTodoId} // 追加
+                  onChange={handleInputChange}
+                  onCancelClick={handleCancelButtonClick}
+                  onSubmit={handleEditedTodoSubmit}
+                />
+              </li>
+            )
+          }
+          return (
+          <ListItem
+          key={todo.id}
+          todo={todo}
+          onEditButtonClick={handleEditButtonClick}
+          />
+          )
+        })}
+
         <li>
-          {isAddTaskFormOpen ? (
-            <Form
-              value={inputValues}
-              onChange={handleInputChange}
-              onCancelClick={handleCancelButtonClick}
-              onSubmit={handleCreateTodoSubmit}
+        {isAddTaskFormOpen ? (
+          <Form
+          value={inputValues}
+          onChange={handleInputChange} // onChangeを追加
+          onCancelClick={handleCancelButtonClick}
+          onSubmit={handleCreateTodoSubmit}/> // 確定された後の内容の表記
+        ) : (
+          <Button
+          buttonStyle='indigo-blue'
+          onClick={handleAddTaskButtonClick} // ボタンを押した時の動作
+          className={styles['add-task']}
+          >
+            <Icon
+              iconName='plus'
+              color='orange'
+              size='medium'
+              className={styles['plus-icon']}
             />
-          ) : (
-            <Button
-              buttonStyle="indigo-blue"
-              onClick={handleAddTaskButtonClick}
-              className={styles['add-task']}
-            >
-              <Icon
-                iconName="plus"
-                color="orange"
-                size="medium"
-                className={styles['plus-icon']}
-              />
-              タスクを追加
-            </Button>
-          )}
+            タスクを追加
+          </Button>
+        )}
         </li>
       </ul>
+      {/* ↑ 追加 */}
     </Layout>
-  );
+  )
 };
