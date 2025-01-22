@@ -59,7 +59,7 @@ export const Top = () => {
       .then(({ data }) => {
         setTodos((prevTodos) => prevTodos.map(todo =>
           todo.id === editTodoId ? { ...todo, ...data } : todo
-        ));
+        )); //編集フォームで書き換えられたIDへ変更して保存をする。
         setEditTodoId('');
         setInputValues({ title: '', description: '' });
       })
@@ -81,6 +81,27 @@ export const Top = () => {
     },
     [todos] // 依存配列にtodosを追加
   )
+
+  const handleDeleteButtonClick = useCallback((id) => {
+    axios.delete(`http://localhost:3000/todo/${id}`)
+    .then(() => {
+      setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== id));
+    })
+    .catch((error) => {
+      console.error('ToDoの削除に失敗しました:', error);
+    });
+  }, [])
+
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/todo')
+      .then(({ data }) => {
+        setTodos(data); // ToDoリストを状態に設定
+      })
+      .catch((error) => {
+        console.error('ToDoの取得に失敗しました:', error);
+      });
+  }, []);
 
   return (
     <Layout>
@@ -106,7 +127,8 @@ export const Top = () => {
           <ListItem
           key={todo.id}
           todo={todo}
-          onEditButtonClick={handleEditButtonClick}
+          onEditButtonClick={handleEditButtonClick} //編集ボタンの指定先
+          onDeleteButtonClick={() => handleDeleteButtonClick(todo.id)} //削除ボタン押した際の指定先
           />
           )
         })}
