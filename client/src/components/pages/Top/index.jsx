@@ -9,6 +9,8 @@ import {Form} from '../../ui/Form'
 
 import styles from './index.module.css'
 
+import { errorToast } from '../../../utils/errorToast'
+
 export const Top = () => {
   const [todos,setTodos]= useState([])//追加
   const [editTodoId, setEditTodoId] = useState('') // 編集する際のID格納場。
@@ -47,8 +49,8 @@ export const Top = () => {
           setInputValues({ title: '', description: '' });
         })
         .catch((error) => {
-          console.error('ToDoの作成に失敗しました:', error);
-        });
+          errorToast(error.message)
+        })
     },
     [inputValues]
   );
@@ -64,8 +66,17 @@ export const Top = () => {
         setInputValues({ title: '', description: '' });
       })
       .catch((error) => {
-        console.error('ToDoの編集に失敗しました:', error);
-      });
+        switch (error.statusCode) {
+          case 404:
+            errorToast(
+              '更新するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+            )
+            break
+            default:
+            errorToast(error.message)
+            break
+        }
+      })
   }, [editTodoId, inputValues]);
 
   const handleEditButtonClick = useCallback((id) => {
@@ -88,10 +99,51 @@ export const Top = () => {
       setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== id));
     })
     .catch((error) => {
-      console.error('ToDoの削除に失敗しました:', error);
-    });
+      switch (error.statusCode) {
+        case 404:
+          errorToast(
+            '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+          )
+          break
+          default:
+          errorToast(error.message)
+          break
+      }
+    })
   }, [])
 
+  const handleToggleButtonClick = useCallback(
+    (id) => {
+      const targetTodo = todos.find((todo) => todo.id === id);
+      const updatedStatus = !targetTodo.isCompleted; // 現在の完了状態を反転
+  
+      axios
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+          isCompleted: updatedStatus, // 更新された完了状態をサーバーに送信
+        })
+        .then(() => {
+          // ローカルの状態を更新して反映
+          setTodos((prevTodos) =>
+            prevTodos.map((todo) =>
+              todo.id === id ? { ...todo, isCompleted: updatedStatus } : todo
+            )
+          );
+        })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+              default:
+                errorToast(error.message)
+                break
+          }
+        })
+      },
+    [todos]
+  );
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo')
@@ -99,8 +151,8 @@ export const Top = () => {
         setTodos(data); // ToDoリストを状態に設定
       })
       .catch((error) => {
-        console.error('ToDoの取得に失敗しました:', error);
-      });
+        errorToast(error.message)
+      })
   }, []);
 
   return (
@@ -129,6 +181,7 @@ export const Top = () => {
           todo={todo}
           onEditButtonClick={handleEditButtonClick} //編集ボタンの指定先
           onDeleteButtonClick={() => handleDeleteButtonClick(todo.id)} //削除ボタン押した際の指定先
+          onToggleButtonClick={handleToggleButtonClick}
           />
           )
         })}
