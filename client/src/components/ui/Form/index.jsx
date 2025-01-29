@@ -4,7 +4,7 @@ import { Button } from '../Button'
 
 import styles from './index.module.css'
 
-export const Form = memo(({ value, onChange, onCancelClick, onSubmit }) => {
+export const Form = memo(({ value, onChange, onCancelClick, onSubmit, editTodoId }) => {
   return (
     <form onSubmit={onSubmit} className={styles.form}>
       <div className={styles['input-field']}>
@@ -51,7 +51,12 @@ Form.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
   }).isRequired,
+  editTodoId: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   onCancelClick: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+}
+
+Form.defaultProps = {
+  editTodoId: '',
 }
