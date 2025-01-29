@@ -61,11 +61,11 @@ export const Top = () => {
         .then(({ data }) => {
           console.log(data)
 
-          setTodos((prevTodos) =>
-            prevTodos.map((todo) =>
-              todo.id === editTodoId ? { ...todo, ...data } :todo
+            setTodos((prevTodos) =>
+              prevTodos.map((todo) =>
+                todo.id === editTodoId ? { ...todo, ...data } :todo
+                )
               )
-            )
             setEditTodoId('')
         })
     },
@@ -90,6 +90,23 @@ const handleDeleteButtonClick = useCallback((id) => {
     setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id))
   })
 }, [])
+
+const handleToggleButtonClick = useCallback(
+  (id) => {
+    axios
+      .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+        isCompleted: todos.find((todo) => todo.id === id).isCompleted, //指定したAPI通信の内容のオブジェクト内isCompletedのバリューとして、todosの中で元々のtodoとAPI通信した後のtodoのidが一緒なら.isCompletedとする
+      })
+      .then(({data}) => {
+        setTodos((prevTodos) =>
+          prevTodos.map((todo) =>
+            todo.id === id ? data : todo
+            )
+        )
+      }) //元のtodosを元に.mapでtodoの新しい配列を作成し、元々のtodoと上で受け取ったtodoのidが正しければdataとして反映する。そうでなければ、元のtodoの状態とする。
+  },
+  [todos]
+)
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({data}) => {
@@ -121,6 +138,7 @@ const handleDeleteButtonClick = useCallback((id) => {
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
               onDeleteButtonClick={handleDeleteButtonClick}
+              onToggleButtonClick={handleToggleButtonClick}
             />
           )
         })}
