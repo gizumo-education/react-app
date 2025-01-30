@@ -38,6 +38,8 @@ export const Top = () => {
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target
     setInputValues((prev) => ({ ...prev, [name]: value }))
+    console.log(event);
+    
   }, [])
 
   const handleCreateTodoSubmit = useCallback(
@@ -92,6 +94,7 @@ export const Top = () => {
   const handleEditButtonClick = useCallback((id) => {
     setIsAddTaskFormOpen(false)
     setEditTodoId(id)
+    console.log(id)
 
     const targetTodo = todos.find((todo) => todo.id === id)
     setInputValues({
