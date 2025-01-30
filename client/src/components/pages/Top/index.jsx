@@ -8,6 +8,8 @@ import { Icon } from '../../ui/Icon'
 
 import { Form } from '../../ui/Form'
 
+import { errorToast } from '../../../utils/errorToast'
+
 import styles from './index.module.css'
 
 export const Top = () => {
@@ -49,6 +51,9 @@ export const Top = () => {
           description: '',
         })
       })
+      .catch((error) => {
+        errorToast(error.message)
+      })
     },
     [inputValues]
   )
@@ -67,6 +72,18 @@ export const Top = () => {
                 )
               )
             setEditTodoId('')
+        })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '更新するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+              default:
+                errorToast(error.message)
+                break
+          }
         })
     },
     [editTodoId, inputValues]
@@ -89,6 +106,18 @@ const handleDeleteButtonClick = useCallback((id) => {
   axios.delete(`http://localhost:3000/todo/${id}`).then(() => {
     setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id))
   })
+  .catch((error) => {
+    switch (error.statusCode) {
+      case 404:
+        errorToast(
+          '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+        )
+        break
+        default:
+          errorToast(error.message)
+          break
+    }
+  })
 }, [])
 
 const handleToggleButtonClick = useCallback(
@@ -104,6 +133,18 @@ const handleToggleButtonClick = useCallback(
             )
         )
       }) //元のtodosを元に.mapでtodoの新しい配列を作成し、元々のtodoと上で受け取ったtodoのidが正しければdataとして反映する。そうでなければ、元のtodoの状態とする。
+      .catch((error) => {
+        switch (error.statusCode) {
+          case 404:
+            errorToast(
+              '完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。'
+            )
+            break
+            default:
+              errorToast(error.message)
+              break
+        }
+      })
   },
   [todos]
 )
@@ -112,6 +153,9 @@ const handleToggleButtonClick = useCallback(
     axios.get('http://localhost:3000/todo').then(({data}) => {
       console.log(data)
       setTodos(data)
+    })
+    .catch((error) => {
+      errorToast(error.message)
     })
   }, [])
   return (
