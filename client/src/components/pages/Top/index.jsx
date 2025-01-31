@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { axios } from '../../../utils/axiosConfig'
-
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem'
 import { Button } from '../../ui/Button'
@@ -14,7 +15,9 @@ import styles from './index.module.css'
 
 export const Top = () => {
 
-  const [todos, setTodos] = useState([])
+  // const [todos, setTodos] = useState([])
+  const todos = useRecoilValue(incompleteTodoListState)
+  const setTodos = useSetRecoilState(todoState)
   const [editTodoId, setEditTodoId] = useState('')
 
   const [inputValues, setInputValues] = useState({
@@ -57,7 +60,7 @@ export const Top = () => {
         errorToast(error.message)
       })
     },
-    [inputValues]
+    [setTodos, inputValues]
   )
 
   const handleEditedTodoSubmit = useCallback(
@@ -88,7 +91,7 @@ export const Top = () => {
           }
         })
     },
-    [editTodoId, inputValues]
+    [setTodos, editTodoId, inputValues]
   )
 
   const handleEditButtonClick = useCallback((id) => {
@@ -121,7 +124,7 @@ const handleDeleteButtonClick = useCallback((id) => {
           break
     }
   })
-}, [])
+}, [setTodos])
 
 const handleToggleButtonClick = useCallback(
   (id) => {
@@ -149,7 +152,7 @@ const handleToggleButtonClick = useCallback(
         }
       })
   },
-  [todos]
+  [todos, setTodos]
 )
 
   useEffect(() => {
@@ -160,7 +163,7 @@ const handleToggleButtonClick = useCallback(
     .catch((error) => {
       errorToast(error.message)
     })
-  }, [])
+  }, [setTodos])
   return (
     <Layout>
       <h1 className={styles.heading}>ToDo一覧</h1>
