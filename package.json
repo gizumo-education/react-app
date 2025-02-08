@@ -6,7 +6,7 @@
   "scripts": {
     "preinstall": "npx only-allow npm",
     "dev:server": "npm run dev -w server",
-    "dev:client": "scripts/start_client.sh",
+    "dev:client": "npm run dev -w client",
     "start": "run-p dev:*"
   },
   "devDependencies": {
