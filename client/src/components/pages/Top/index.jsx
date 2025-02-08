@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { axios } from '../../../utils/axiosConfig'
-
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem'
 import { Button } from '../../ui/Button'
@@ -12,7 +13,9 @@ import styles from './index.module.css'
 import { toFormData } from 'axios'
 
 export const Top = () => {
-  const [todos, setTodos] = useState([])
+  const todos = useRecoilValue(incompleteTodoListState)
+  const setTodos = useSetRecoilState(todoState)
+  // 元々設定していた変数と更新関数にRecoilで使用できる内容を定義している
   console.log(todos)
 
   const [editTodoId, setEditTodoId] = useState('')
@@ -59,7 +62,8 @@ export const Top = () => {
         errorToast(error.message)
       })
     },
-    [inputValues]
+    [setTodos, inputValues]
+    // Atomの値が変更されたら更新する
   )
   
   const handleEditedTodoSubmit = useCallback(
@@ -89,7 +93,7 @@ export const Top = () => {
           }
         })
     },
-    [editTodoId, inputValues]
+    [setTodos, editTodoId, inputValues]
   )
 
   const handleEditButtonClick = useCallback(
@@ -125,7 +129,9 @@ export const Top = () => {
         }
       })
     })
-  },[])
+  },
+  [setTodos]
+)
 
   const handleToggleButtonClick = useCallback(
     (id) => {
@@ -154,7 +160,7 @@ export const Top = () => {
         }
       })
     },
-    [todos]
+    [todos, setTodos]
   )
 
   useEffect(() => {
@@ -165,7 +171,7 @@ export const Top = () => {
     .catch((error) => {
       errorToast(error.message)
     })
-  },[])
+  },[setTodos])
   
   return (
     <Layout>
