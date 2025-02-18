@@ -1,12 +1,52 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { axios } from '../../../utils/axiosConfig'
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem'
+import { Button } from '../../ui/Button'
+import { Icon } from '../../ui/Icon'
+import { Form } from '../../ui/Form'
 
 import styles from './index.module.css'
 
 export const Top = () => {
   const [todos, setTodos] = useState([])
+
+  // Todoの追加フォームに入力された値を保持するstate
+  const [inputValues, setInputValues] = useState({
+    title: '',
+    description: '',
+  })
+
+  // Todo追加フォームの表示非表示を切り替えるためにTopコンポーネントにstateを追加
+  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
+
+  // ボタンをクリックした時に実行する
+  const handleAddTaskButtonClick = useCallback(() => {
+    setIsAddTaskFormOpen(true)
+  }, [])
+
+  // キャンセルボタンをクリックした時に実行する
+  const handleCancelButtonClick = useCallback(() => {
+    setIsAddTaskFormOpen(false)
+  }, [])
+
+  // 新しいTodoを追加するためにはタイトルと説明の入力した値をAPIに送信する
+  const handleInputChange = useCallback((event) => {
+    const { name, value } = event.target
+    setInputValues((prev) => ({ ...prev, [name]: value }))
+  }, [])
+
+  const handleCreateTodoSubmit = useCallback(
+    (event) => {
+      event.preventDefault()
+      axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
+        setTodos((prevTodos) => [...prevTodos, data])
+        setIsAddTaskFormOpen(false)
+        setInputValues({ title: '', description: '' })
+      })
+    },
+    [inputValues]
+  )
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
@@ -21,6 +61,31 @@ export const Top = () => {
         {todos.map((todo) => {
           return <ListItem key={todo.id} todo={todo} />
         })}
+
+        <li>
+          {isAddTaskFormOpen ? (
+            <Form
+              value={inputValues}
+              onChange={handleInputChange}
+              onCancelClick={handleCancelButtonClick}
+              onSubmit={handleCreateTodoSubmit}
+            />
+          ) : (
+            <Button
+              buttonStyle='indigo-blue'
+              onClick={handleAddTaskButtonClick}
+              className={styles['add-task']}
+            >
+              <Icon
+                iconName='plus'
+                color='orange'
+                size='medium'
+                className={styles['plus-icon']}
+              />
+              タスクを追加
+            </Button>
+          )}
+        </li>
       </ul>
     </Layout>
   )
