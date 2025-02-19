@@ -1,3 +1,4 @@
+// Topコンポーネントにほぼ全ての処理が書いてある
 import { useState, useEffect, useCallback } from 'react'
 import { axios } from '../../../utils/axiosConfig'
 import { Layout } from '../../ui/Layout'
@@ -9,10 +10,10 @@ import { Form } from '../../ui/Form'
 import styles from './index.module.css'
 
 export const Top = () => {
+  // Todoの一覧を管理するためのstate[旧Todos、新Todos]
   const [todos, setTodos] = useState([])
 
-  // Todoの編集フォームの表示非表示の切り替えをするためにTodoのIdを管理するためのstate
-  const [editTodoId, setEditTodoId] = useState('')
+  const [completedTodos, setCompletedTodos] = useState([])
 
   // Todoの追加フォームに入力された値を保持するstate
   const [inputValues, setInputValues] = useState({
@@ -20,17 +21,20 @@ export const Top = () => {
     description: '',
   })
 
+  // Todoの編集フォームの表示非表示の切り替えをするためにTodoのIdを管理するためのstate
+  const [editTodoId, setEditTodoId] = useState('')
+
   // Todo追加フォームの表示非表示を切り替えるためにTopコンポーネントにstateを追加
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
-  // ボタンをクリックした時に実行する
+  // タスクを追加ボタンをクリックした時に実行する
   const handleAddTaskButtonClick = useCallback(() => {
     setInputValues({ title: '', description: '' })
     setEditTodoId('')
     setIsAddTaskFormOpen(true)
   }, [])
 
-  // キャンセルボタンをクリックした時に実行する
+  // Todo追加のキャンセルボタンをクリックした時に実行する
   const handleCancelButtonClick = useCallback(() => {
     setEditTodoId('')
     setIsAddTaskFormOpen(false)
@@ -61,14 +65,9 @@ export const Top = () => {
       axios
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
-          setTodos((prevTodos) => {
-            return prevTodos.map((todo) => {
-              if (todo.id === editTodoId) {
-                return data
-              }
-              return todo
-            })
-          })
+          setTodos((prevTodos) =>
+            prevTodos.map((todo) => (data.id === todo.id ? data : todo))
+          )
           setEditTodoId('')
         })
     },
@@ -96,14 +95,35 @@ export const Top = () => {
     })
   }, [])
 
+  const handleToggleButtonClick = useCallback(
+    (id) => {
+      axios
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+          isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+        })
+        .then(({ data }) => {
+          setCompletedTodos = setTodos((completedTodos) =>
+            completedTodos.map((todo) => (data.id === todo.id ? data : todo))
+          )
+        })
+        .catch((error) => {
+          console.log('更新に失敗しました', error)
+        })
+    },
+    [todos]
+  )
+
+  // Todoの一覧を取得することはレンダリング後に実行したい副作用にあたるためuseEffectを使用してAPI通信を行う
+  // Todoの配列が含まれたオブジェクトが返ってくる
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       setTodos(data)
-      console.log(data)
+      // setTodosは元々配列のため返ってきたオブジェクトの中の配列のdataをそのままセットする
     })
   }, [])
   return (
     <Layout>
+      {/* /* // Layoutコンポーネントのchildrenにh1の見出しを渡している */}
       <h1 className={styles.heading}>ToDo一覧</h1>
       <ul className={styles.list}>
         {todos.map((todo) => {
@@ -122,15 +142,18 @@ export const Top = () => {
           }
 
           return (
+            // ListItemコンポーネントにmapメソッドを使用して1つずつTodoのデータを渡して表示をしている
             <ListItem
               key={todo.id}
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
               onDeleteButtonClick={handleDeleteButtonClick}
+              onToggleButtonClick={handleToggleButtonClick}
             />
           )
         })}
 
+        {/* trueならTodoフォームを表示し、falseならタスク追加ボタンを表示する */}
         <li>
           {isAddTaskFormOpen ? (
             <Form
