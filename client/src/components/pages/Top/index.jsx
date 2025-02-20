@@ -6,6 +6,7 @@ import { ListItem } from '../../ui/ListItem'
 import { Button } from '../../ui/Button'
 import { Icon } from '../../ui/Icon'
 import { Form } from '../../ui/Form'
+import { errorToast } from '../../../utils/errorToast'
 
 import styles from './index.module.css'
 
@@ -48,11 +49,16 @@ export const Top = () => {
   const handleCreateTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
-      axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-        setTodos((prevTodos) => [...prevTodos, data])
-        setIsAddTaskFormOpen(false)
-        setInputValues({ title: '', description: '' })
-      })
+      axios
+        .post('http://localhost:3000/todo', inputValues)
+        .then(({ data }) => {
+          setTodos((prevTodos) => [...prevTodos, data])
+          setIsAddTaskFormOpen(false)
+          setInputValues({ title: '', description: '' })
+        })
+        .catch((error) => {
+          errorToast(error.message)
+        })
     },
     [inputValues]
   )
@@ -67,6 +73,19 @@ export const Top = () => {
             prevTodos.map((todo) => (data.id === todo.id ? data : todo))
           )
           setEditTodoId('')
+        })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '更新するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+
+            default:
+              errorToast(error.message)
+              break
+          }
         })
     },
     [editTodoId, inputValues]
@@ -87,9 +106,24 @@ export const Top = () => {
   )
 
   const handleDeleteButtonClick = useCallback((id) => {
-    axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
-      setTodos(data)
-    })
+    axios
+      .delete(`http://localhost:3000/todo/${id}`)
+      .then(({ data }) => {
+        setTodos(data)
+      })
+      .catch((error) => {
+        switch (error.statusCode) {
+          case 404:
+            errorToast(
+              '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+            )
+            break
+
+          default:
+            errorToast(error.message)
+            break
+        }
+      })
   }, [])
 
   const handleToggleButtonClick = useCallback(
@@ -104,7 +138,17 @@ export const Top = () => {
           )
         })
         .catch((error) => {
-          console.log('更新に失敗しました', error)
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+
+            default:
+              errorToast(error.message)
+              break
+          }
         })
     },
     [todos]
