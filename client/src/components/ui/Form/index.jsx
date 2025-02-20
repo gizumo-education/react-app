@@ -1,3 +1,9 @@
+// Formコンポーネントの機能
+// Todoのタイトルを入力するinput要素
+// Todoの説明を入力するtextarea要素
+// キャンセルボタン
+// 送信ボタン
+
 import PropTypes from 'prop-types'
 import { memo } from 'react'
 import { Button } from '../Button'
@@ -5,6 +11,7 @@ import { Button } from '../Button'
 import styles from './index.module.css'
 
 export const Form = memo(
+  // Formコンポーネントは引数として5つのpropsを受け取る
   ({ value, editTodoId, onChange, onCancelClick, onSubmit }) => {
     return (
       <form onSubmit={onSubmit} className={styles.form}>

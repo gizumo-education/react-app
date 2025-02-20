@@ -10,10 +10,8 @@ import { Form } from '../../ui/Form'
 import styles from './index.module.css'
 
 export const Top = () => {
-  // Todoの一覧を管理するためのstate[旧Todos、新Todos]
+  // id, title, description, isCompletedのobjectの配列
   const [todos, setTodos] = useState([])
-
-  const [completedTodos, setCompletedTodos] = useState([])
 
   // Todoの追加フォームに入力された値を保持するstate
   const [inputValues, setInputValues] = useState({
@@ -22,7 +20,7 @@ export const Top = () => {
   })
 
   // Todoの編集フォームの表示非表示の切り替えをするためにTodoのIdを管理するためのstate
-  const [editTodoId, setEditTodoId] = useState('')
+  const [editTodoId, setEditTodoId] = useState('') //ID
 
   // Todo追加フォームの表示非表示を切り替えるためにTopコンポーネントにstateを追加
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
@@ -40,7 +38,7 @@ export const Top = () => {
     setIsAddTaskFormOpen(false)
   }, [])
 
-  // 新しいTodoを追加するためにはタイトルと説明の入力した値をAPIに送信する
+  // 新しいTodoを追加するためにはタイトルと説明の入力した値をstateに保持する必要がある
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target
     setInputValues((prev) => ({ ...prev, [name]: value }))
@@ -90,8 +88,7 @@ export const Top = () => {
 
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
-      // setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id)
-      data.id === setTodos.id ? setTodos(data) : console.log('error')
+      setTodos(data)
     })
   }, [])
 
@@ -102,8 +99,8 @@ export const Top = () => {
           isCompleted: todos.find((todo) => todo.id === id).isCompleted,
         })
         .then(({ data }) => {
-          setCompletedTodos = setTodos((completedTodos) =>
-            completedTodos.map((todo) => (data.id === todo.id ? data : todo))
+          setTodos((prev) =>
+            prev.map((todo) => (data.id === todo.id ? data : todo))
           )
         })
         .catch((error) => {

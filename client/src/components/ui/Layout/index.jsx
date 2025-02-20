@@ -1,3 +1,7 @@
+// Layoutコンポーネントは
+// ヘッダーとサイドバーの表示
+// propsのchidrenで受け取ったものをメインコンテンツとして表示をしている
+
 import PropTypes from 'prop-types'
 import { memo } from 'react'
 
@@ -6,6 +10,7 @@ import { Sidebar } from '../Sidebar'
 
 import styles from './index.module.css'
 
+// propsのchildrenを受け取ったものをメインコンテンツとして表示をするためのコンポーネント
 export const Layout = memo(({ children }) => {
   return (
     <div className={styles.layout}>
