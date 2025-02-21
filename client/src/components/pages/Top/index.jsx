@@ -60,7 +60,7 @@ export const Top = () => {
           errorToast(error.message)
         })
     },
-    [inputValues]
+    [inputValues] // inputValuesが変更された時だけ再レンダリングする
   )
 
   const handleEditedTodoSubmit = useCallback(
@@ -158,6 +158,7 @@ export const Top = () => {
   // Todoの配列が含まれたオブジェクトが返ってくる
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
+      console.log(data)
       setTodos(data)
       // setTodosは元々配列のため返ってきたオブジェクトの中の配列のdataをそのままセットする
     })
