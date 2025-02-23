@@ -1,6 +1,8 @@
 // Topコンポーネントにほぼ全ての処理が書いてある
 import { useState, useEffect, useCallback } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { axios } from '../../../utils/axiosConfig'
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem'
 import { Button } from '../../ui/Button'
@@ -12,7 +14,8 @@ import styles from './index.module.css'
 
 export const Top = () => {
   // id, title, description, isCompletedのobjectの配列
-  const [todos, setTodos] = useState([])
+  const todos = useRecoilValue(incompleteTodoListState)
+  const setTodos = useSetRecoilState(todoState)
 
   // Todoの追加フォームに入力された値を保持するstate
   const [inputValues, setInputValues] = useState({
@@ -60,7 +63,7 @@ export const Top = () => {
           errorToast(error.message)
         })
     },
-    [inputValues] // inputValuesが変更された時だけ再レンダリングする
+    [setTodos, inputValues] // inputValuesが変更された時だけ再レンダリングする
   )
 
   const handleEditedTodoSubmit = useCallback(
@@ -88,7 +91,7 @@ export const Top = () => {
           }
         })
     },
-    [editTodoId, inputValues]
+    [setTodos, editTodoId, inputValues]
   )
 
   const handleEditButtonClick = useCallback(
@@ -105,26 +108,29 @@ export const Top = () => {
     [todos]
   )
 
-  const handleDeleteButtonClick = useCallback((id) => {
-    axios
-      .delete(`http://localhost:3000/todo/${id}`)
-      .then(({ data }) => {
-        setTodos(data)
-      })
-      .catch((error) => {
-        switch (error.statusCode) {
-          case 404:
-            errorToast(
-              '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
-            )
-            break
+  const handleDeleteButtonClick = useCallback(
+    (id) => {
+      axios
+        .delete(`http://localhost:3000/todo/${id}`)
+        .then(({ data }) => {
+          setTodos(data)
+        })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
 
-          default:
-            errorToast(error.message)
-            break
-        }
-      })
-  }, [])
+            default:
+              errorToast(error.message)
+              break
+          }
+        })
+    },
+    [setTodos]
+  )
 
   const handleToggleButtonClick = useCallback(
     (id) => {
@@ -151,7 +157,7 @@ export const Top = () => {
           }
         })
     },
-    [todos]
+    [todos, setTodos]
   )
 
   // Todoの一覧を取得することはレンダリング後に実行したい副作用にあたるためuseEffectを使用してAPI通信を行う
@@ -162,7 +168,7 @@ export const Top = () => {
       setTodos(data)
       // setTodosは元々配列のため返ってきたオブジェクトの中の配列のdataをそのままセットする
     })
-  }, [])
+  }, [setTodos])
   return (
     <Layout>
       {/* /* // Layoutコンポーネントのchildrenにh1の見出しを渡している */}
