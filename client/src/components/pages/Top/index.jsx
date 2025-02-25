@@ -13,7 +13,8 @@ import { errorToast } from '../../../utils/errorToast'
 import styles from './index.module.css'
 
 export const Top = () => {
-  // id, title, description, isCompletedのobjectの配列
+  // todosはRecoilの状態から読み取り専用のフックを使用して最新の状態を取得している
+  // setTodosはRecoilの状態を更新するための書き込み専用フックを使用して状態を更新している
   const todos = useRecoilValue(incompleteTodoListState)
   const setTodos = useSetRecoilState(todoState)
 
@@ -169,6 +170,7 @@ export const Top = () => {
       // setTodosは元々配列のため返ってきたオブジェクトの中の配列のdataをそのままセットする
     })
   }, [setTodos])
+
   return (
     <Layout>
       {/* /* // Layoutコンポーネントのchildrenにh1の見出しを渡している */}
