@@ -92,6 +92,23 @@ export const Top = () => {
       })
   }, [])
 
+  // 完了・未完了の切り替え処理
+  const handleToggleButtonClick = useCallback(
+    (id) => {
+      axios
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+          isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+        })
+        .then(({ data }) => {
+          setTodos(todos.map((todo) => (todo.id === data.id ? data : todo)))
+        })
+        .catch((err) => {
+          console.log(err, '完了・未完了の更新に失敗しました')
+        })
+    },
+    [todos, setTodos]
+  )
+
   // マウント時にデータを取得する処理
   useEffect(() => {
     axios
@@ -129,6 +146,7 @@ export const Top = () => {
                 todo={todo}
                 onEditButtonClick={handleEditButtonClick}
                 onDeleteButtonClick={handleDeleteButtonClick}
+                onToggleButtonClick={handleToggleButtonClick}
               />
             )
           })}
