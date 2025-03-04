@@ -14,14 +14,18 @@ export const Top = () => {
     description: '',
   })
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false) // タスクを追加のフォーム
+  const [editTodoId, setEditTodoId] = useState('')
 
   // 「タスクを追加」ボタンをクリックしたときの処理
   const handleAddTaskButtonClick = useCallback(() => {
+    setInputValues({ title: '', description: '' })
+    setEditTodoId('')
     setIsAddTaskFormOpen(true)
   }, [])
 
   // 「キャンセル」ボタンをクリックしたときの処理
   const handleCancelButtonClick = useCallback(() => {
+    setEditTodoId('')
     setIsAddTaskFormOpen(false)
   }, [])
 
@@ -43,6 +47,38 @@ export const Top = () => {
     [inputValues]
   )
 
+  // 編集ボタンを押したときの処理
+  const handleEditButtonClick = useCallback(
+    (id) => {
+      setIsAddTaskFormOpen(false)
+      setEditTodoId(id)
+
+      const targetTodo = todos.find((todo) => todo.id === id)
+      setInputValues({
+        title: targetTodo.title,
+        description: targetTodo.description,
+      })
+    },
+    [todos]
+  )
+
+  // 編集フォームで保存したら、更新する処理
+  const handleEditedTodoSubmit = useCallback(
+    (event) => {
+      event.preventDefault()
+      axios
+        .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
+        .then(({ data }) => {
+          setTodos((prevTodos) =>
+            prevTodos.map((todo) => (todo.id === editTodoId ? data : todo))
+          )
+          setEditTodoId('')
+          setIsAddTaskFormOpen(false)
+        })
+    },
+    [editTodoId, inputValues]
+  )
+
   // マウント時にデータを取得する処理
   useEffect(() => {
     axios
@@ -61,7 +97,26 @@ export const Top = () => {
         <h1 className={styles.heading}>ToDo一覧</h1>
         <ul className={styles.list}>
           {todos.map((todo) => {
-            return <ListItem key={todo.id} todo={todo} />
+            if (editTodoId === todo.id) {
+              return (
+                <li key={todo.id}>
+                  <Form
+                    value={inputValues}
+                    editTodoId={editTodoId}
+                    onChange={handleInputChange}
+                    onCancelClick={handleCancelButtonClick}
+                    onSubmit={handleEditedTodoSubmit}
+                  />
+                </li>
+              )
+            }
+            return (
+              <ListItem
+                key={todo.id}
+                todo={todo}
+                onEditButtonClick={handleEditButtonClick}
+              />
+            )
           })}
           <li>
             {isAddTaskFormOpen ? (
@@ -70,6 +125,7 @@ export const Top = () => {
                 onChange={handleInputChange}
                 onCancelClick={handleCancelButtonClick}
                 onSubmit={handleCreateTodoSubmit}
+                onEditButtonClick={handleEditedTodoSubmit}
               />
             ) : (
               <Button
