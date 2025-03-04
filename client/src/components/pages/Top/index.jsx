@@ -79,6 +79,19 @@ export const Top = () => {
     [editTodoId, inputValues]
   )
 
+  // Todoを削除する処理
+  const handleDeleteButtonClick = useCallback((id) => {
+    axios
+      .delete(`http://localhost:3000/todo/${id}`)
+      .then(() => {
+        console.log(id)
+        setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id))
+      })
+      .catch((err) => {
+        console.log(err, '削除に失敗しました。')
+      })
+  }, [])
+
   // マウント時にデータを取得する処理
   useEffect(() => {
     axios
@@ -115,6 +128,7 @@ export const Top = () => {
                 key={todo.id}
                 todo={todo}
                 onEditButtonClick={handleEditButtonClick}
+                onDeleteButtonClick={handleDeleteButtonClick}
               />
             )
           })}
