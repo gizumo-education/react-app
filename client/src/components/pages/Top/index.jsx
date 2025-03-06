@@ -1,51 +1,62 @@
 import { useEffect, useState, useCallback } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil' // 追加
 import { axios } from '../../../utils/axiosConfig'
+import { todoState, incompleteTodoListState } from '../../../stores/todoState' // 追加
 
 import { Layout } from '../../ui/Layout'
-import {ListItem} from '../../ui/ListItem'
-import {Button} from '../../ui/Button'
-import {Icon} from '../../ui/Icon'
-import {Form} from '../../ui/Form'
+import { ListItem } from '../../ui/ListItem'
+import { Button } from '../../ui/Button'
+import { Icon } from '../../ui/Icon'
+import { Form } from '../../ui/Form'
 
 import styles from './index.module.css'
 
 import { errorToast } from '../../../utils/errorToast'
 
 export const Top = () => {
-  const [todos,setTodos]= useState([])
+  // ↓ useStateを削除し、Recoilの使用に変更
+  const todos = useRecoilValue(incompleteTodoListState)
+  const setTodos = useSetRecoilState(todoState)
+  // ↑ useStateを削除し、Recoilの使用に変更
   const [editTodoId, setEditTodoId] = useState('') // 編集する際のID格納場。
   const [inputValues, setInputValues] = useState({ //追加フォームに入力したIDの格納場所
     title: '',
     description: '',
   })
+
+
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)//ToDoの追加フォームの表示・非表示を切り替えるため。
-  
-//タスク追加ボタンの処理内容
+
+  //タスク追加ボタンの処理内容
   const handleAddTaskButtonClick = useCallback(() => {
     setInputValues({ title: '', description: '' }) // 入力フォームを初期状態にリセット
     setEditTodoId('') //入力フォームを初期状態にリセット
     setIsAddTaskFormOpen(true) // タスク追加フォームを表示
   }, [])
 
-//タスクなどに文字を反映できるようにする処理。
-const handleInputChange = useCallback((event) => {
-  const { name, value } = event.target; // イベントのターゲットから name と value を取得
-  setInputValues((prev) => ({ ...prev, [name]: value })) // 状態を更新
-}, [])
+  //タスクなどに文字を反映できるようにする処理。
+  const handleInputChange = useCallback((event) => {
+    const { name, value } = event.target; // イベントのターゲットから name と value を取得
+    setInputValues((prev) => ({ ...prev, [name]: value })) // 状態を更新
+  }, [])
 
-//キャンセルボタン用の処理
+  //キャンセルボタン用の処理
   const handleCancelButtonClick = useCallback(() => {
     setEditTodoId('') //入力フォームを初期状態にリセット
     setIsAddTaskFormOpen(false) //開いているフォームを非表示
   }, [])
 
-//追加ボタンを完了した際の処理。
+  //追加ボタンを完了した際の処理。
   const handleCreateTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()// フォームのデフォルト動作（ページリロードなど）を防止
       axios.post('http://localhost:3000/todo', inputValues) // サーバーにデータを送信
         .then(({ data }) => {
-          setTodos((prevTodos) => [...prevTodos, data]);// ToDoリストに追加した新しいアイテムを入れて更新
+          setTodos((prevTodos) => {
+            console.log('prevTodos', [...prevTodos, data]);
+            return [...prevTodos, data]
+          });// ToDoリストに追加した新しいアイテムを入れて更新
+
           setIsAddTaskFormOpen(false);// フォームを非表示にする
           setInputValues({ title: '', description: '' });// 入力欄をリセットする
         })
@@ -53,8 +64,21 @@ const handleInputChange = useCallback((event) => {
           errorToast(error.message)
         })
     },
-    [inputValues]// 依存配列を指定
+    [setTodos, inputValues]
   );
+
+  //編集ボタンを押した際の処理。
+  const handleEditButtonClick = useCallback((id) => {
+    setIsAddTaskFormOpen(false)//開いているフォームを非表示にする。
+    setEditTodoId(id)// 編集対象のToDoのIDを設定する。
+    const targetTodo = todos.find((todo) => todo.id === id)//todos配列の中から編集ボタンの押されたToDoアイテム（IDが一致するもの）を探す
+    setInputValues({
+      title: targetTodo.title,
+      description: targetTodo.description,
+    }) //見つけたtargetTodoのtitleとdescriptionを、フォームの入力欄に反映させることで編集フォームに表示する初期値に設定。
+  },
+    [todos] // 依存配列にtodosを追加
+  )
 
   //編集ボタンを完了した際の処理。
   const handleEditedTodoSubmit = useCallback((event) => {
@@ -74,56 +98,45 @@ const handleInputChange = useCallback((event) => {
               '更新するToDoが見つかりませんでした。画面を更新して再度お試しください。'
             )
             break
-            default:
+          default:
             errorToast(error.message)
             break
         }
       })
-  }, [editTodoId, inputValues]);
+  }, [setTodos, editTodoId, inputValues]);
 
-  //編集ボタンを押した際の処理。
-  const handleEditButtonClick = useCallback((id) => {
-      setIsAddTaskFormOpen(false)//開いているフォームを非表示にする。
-      setEditTodoId(id)// 編集対象のToDoのIDを設定する。
-      const targetTodo = todos.find((todo) => todo.id === id)//todos配列の中から編集ボタンの押されたToDoアイテム（IDが一致するもの）を探す
-      setInputValues({
-        title: targetTodo.title,
-        description: targetTodo.description,
-      }) //見つけたtargetTodoのtitleとdescriptionを、フォームの入力欄に反映させることで編集フォームに表示する初期値に設定。
-    },
-    [todos] // 依存配列にtodosを追加
-  )
 
-    //削除ボタンを押した際の処理。
-    const handleDeleteButtonClick = useCallback((id) => {
+  //削除ボタンを押した際の処理。
+  const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`) //削除ボタンを押されたIDのデータをサーバーに送信
-    .then(() => {
-      // setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== id)); //削除ボタンの押されたIDだけを削除してToDoリストへ反映。
-      console.log()
-    })
-    .catch((error) => {
-      switch (error.statusCode) {
-        case 404:
-          errorToast(
-            '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
-          )
-          break
+      .then(() => {
+        // setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== id)); //削除ボタンの押されたIDだけを削除してToDoリストへ反映。
+        console.log()
+      })
+      .catch((error) => {
+        switch (error.statusCode) {
+          case 404:
+            errorToast(
+              '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+            )
+            break
           default:
-          errorToast(error.message)
-          break
-      }
-    })
-  }, [])
+            errorToast(error.message)
+            break
+        }
+      })
+  }, [setTodos])
 
   //ToDoの完了・未完了切り替えボタンを押した際の処理。
   const handleToggleButtonClick = useCallback(
     (id) => {
       const targetTodo = todos.find((todo) => todo.id === id)//現在の完了状態を取得
       const updatedStatus = !targetTodo.isCompleted; // 現在の完了状態を反転
-  
+
+
       axios.patch(`http://localhost:3000/todo/${id}/completion-status`, {
-          isCompleted: updatedStatus,
-        })// 反転された完了状態をサーバーに送信
+        isCompleted: updatedStatus,
+      })// 反転された完了状態をサーバーに送信
         .then(() => {
           // ローカルの状態を更新して反映
           setTodos((prevTodos) =>
@@ -140,13 +153,13 @@ const handleInputChange = useCallback((event) => {
                 '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
               )
               break
-              default:
-                errorToast(error.message)
-                break
+            default:
+              errorToast(error.message)
+              break
           }
         })
-      },
-    [todos]
+    },
+    [todos, setTodos]
   );
 
   //初期表示データの表示処理。
@@ -158,7 +171,7 @@ const handleInputChange = useCallback((event) => {
       .catch((error) => {
         errorToast(error.message)
       })
-  }, []);
+  }, [setTodos]);
 
   return (
     <Layout>
@@ -179,44 +192,41 @@ const handleInputChange = useCallback((event) => {
             )
           }
           return (
-          <ListItem
-          key={todo.id}
-          todo={todo}
-          onEditButtonClick={handleEditButtonClick} //編集ボタンが押された際に呼ばれる関数
-          onDeleteButtonClick={() => handleDeleteButtonClick(todo.id)} //削除ボタンが押された際に呼ばれる関数
-          onToggleButtonClick={handleToggleButtonClick}//完了・未完了ボタンが押された際に呼ばれる関数
-          />
+            <ListItem
+              key={todo.id}
+              todo={todo}
+              onEditButtonClick={handleEditButtonClick} //編集ボタンが押された際に呼ばれる関数
+              onDeleteButtonClick={() => handleDeleteButtonClick(todo.id)} //削除ボタンが押された際に呼ばれる関数
+              onToggleButtonClick={handleToggleButtonClick}//完了・未完了ボタンが押された際に呼ばれる関数
+            />
           )
         })}
 
         <li>
-        {isAddTaskFormOpen ? ( //trueの時にフォームを表示する。
-          <Form
-          value={inputValues}//フォームの入力フィールドの初期値
-          onChange={handleInputChange}//入力値が変更された際に呼ばれる関数。
-          onCancelClick={handleCancelButtonClick}//フォームをキャンセルするボタンがクリックされたときに呼ばれる関数
-          onSubmit={handleCreateTodoSubmit}//フォームが送信されたときに呼ばれる関数
-          />
-        ) : (
-          <Button
-          buttonStyle='indigo-blue'
-          onClick={handleAddTaskButtonClick}
-          className={styles['add-task']}
-          >
-            <Icon
-              iconName='plus'
-              color='orange'
-              size='medium'
-              className={styles['plus-icon']}
+          {isAddTaskFormOpen ? ( //trueの時にフォームを表示する。
+            <Form
+              value={inputValues}//フォームの入力フィールドの初期値
+              onChange={handleInputChange}//入力値が変更された際に呼ばれる関数。
+              onCancelClick={handleCancelButtonClick}//フォームをキャンセルするボタンがクリックされたときに呼ばれる関数
+              onSubmit={handleCreateTodoSubmit}//フォームが送信されたときに呼ばれる関数
             />
-            タスクを追加
-          </Button>
-        )}
+          ) : (
+            <Button
+              buttonStyle='indigo-blue'
+              onClick={handleAddTaskButtonClick}
+              className={styles['add-task']}
+            >
+              <Icon
+                iconName='plus'
+                color='orange'
+                size='medium'
+                className={styles['plus-icon']}
+              />
+              タスクを追加
+            </Button>
+          )}
         </li>
       </ul>
     </Layout>
   )
 };
-
-// レスポンスを元に削除処理内容を書く（既に処理依頼をしているので反映処理のみで）
-// 次回追加機能部分口頭レビュー（中身詳しく。）

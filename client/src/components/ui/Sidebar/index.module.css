@@ -6,7 +6,34 @@
 }
 
 .navi-item {
-  display: inline-block;
+  display: flex;
+  align-items: center;
   width: 100%;
   padding: 8px 10px;
+  color: var(--indigo-blue);
+  /* ↑ プロパティを全て置き換え */
+}
+
+/* ↓ 追加 */
+.category {
+  font-weight: bold;
+}
+
+.list {
+  margin-top: 8px;
+}
+
+.active {
+  color: var(--dark-blue);
+  text-decoration: none;
+  background-color: var(--pastel-orange);
+  border-radius: 4px;
+}
+
+.icon {
+  margin-top: 3px;
+}
+
+.text {
+  margin-left: 8px;
 }
