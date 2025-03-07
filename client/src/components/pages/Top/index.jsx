@@ -7,9 +7,12 @@ import { Button } from '../../ui/Button'
 import { Icon } from '../../ui/Icon'
 import { Form } from '../../ui/Form'
 import { errorToast } from '../../../utils/errorToast'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { incompletedTodoListState, todoState } from '../../../stores/todoState'
 
 export const Top = () => {
-  const [todos, setTodos] = useState([])
+  const todos = useRecoilValue(incompletedTodoListState) // 読み込み専用・未完了
+  const setTodos = useSetRecoilState(todoState) // 書き込み専用・空のtodo
   const [inputValues, setInputValues] = useState({
     title: '',
     description: '',
@@ -50,7 +53,7 @@ export const Top = () => {
           errorToast(error.message)
         })
     },
-    [inputValues]
+    [setTodos, inputValues]
   )
 
   // 編集ボタンを押したときの処理
@@ -94,30 +97,33 @@ export const Top = () => {
           }
         })
     },
-    [editTodoId, inputValues]
+    [setTodos, editTodoId, inputValues]
   )
 
   // Todoを削除する処理
-  const handleDeleteButtonClick = useCallback((id) => {
-    axios
-      .delete(`http://localhost:3000/todo/${id}`)
-      .then(() => {
-        console.log(id)
-        setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id))
-      })
-      .catch((error) => {
-        switch (error.statusCode) {
-          case 404:
-            errorToast(
-              '削除するTodoが見つかりませんでした。画面を更新して再度お試しください。'
-            )
-            break
-          default:
-            errorToast(error.message)
-            break
-        }
-      })
-  }, [])
+  const handleDeleteButtonClick = useCallback(
+    (id) => {
+      axios
+        .delete(`http://localhost:3000/todo/${id}`)
+        .then(() => {
+          console.log(id)
+          setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id))
+        })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '削除するTodoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+            default:
+              errorToast(error.message)
+              break
+          }
+        })
+    },
+    [setTodos]
+  )
 
   // 完了・未完了の切り替え処理
   const handleToggleButtonClick = useCallback(
@@ -155,7 +161,7 @@ export const Top = () => {
       .catch((error) => {
         errorToast(error.message)
       })
-  }, [])
+  }, [setTodos])
 
   return (
     <Layout>
