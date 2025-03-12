@@ -50,6 +50,7 @@ export const ListItem = memo(
             </div>
           )}
         </div>
+
         <div className={styles['task-action']}>
           {!todo.isCompleted && (
             <>
@@ -81,8 +82,8 @@ ListItem.propTypes = {
     description: PropTypes.string,
     isCompleted: PropTypes.bool,
   }).isRequired,
-  onEditButtonClick: PropTypes.func.isRequired,
-  onDeleteButtonClick: PropTypes.func.isRequired, // 追加
+  onEditButtonClick: PropTypes.func,
+  onDeleteButtonClick: PropTypes.func, // 追加
   onToggleButtonClick: PropTypes.func.isRequired,
 }
 ListItem.defaultProps = {

@@ -3,16 +3,16 @@ import { atom, selector } from 'recoil'
 export const todoState = atom({
   key: 'todoState',
   default: [],
-})
+});
 
 export const completedTodoListState = selector({
   key: 'completedTodoListState',
   get: ({ get }) => {
     const todos = get(todoState);
-    console.log('conp', todos)
-    return todos.filter(todo => !todo.incompleteTodoListState);
+    console.log('comp', todos)
+    return todos.filter(todo => todo.isCompleted);
   },
-})
+});
 
 export const incompleteTodoListState = selector({
   key: 'incompleteTodoListState',
@@ -21,4 +21,4 @@ export const incompleteTodoListState = selector({
     console.log('todos:',todos);
     return todos.filter(todo => !todo.isCompleted);
   },
-})
+});

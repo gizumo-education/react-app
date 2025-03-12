@@ -110,8 +110,7 @@ export const Top = () => {
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`) //削除ボタンを押されたIDのデータをサーバーに送信
       .then(() => {
-        // setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== id)); //削除ボタンの押されたIDだけを削除してToDoリストへ反映。
-        console.log()
+      setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== id)); //削除ボタンの押されたIDだけを削除してToDoリストへ反映。
       })
       .catch((error) => {
         switch (error.statusCode) {
@@ -127,24 +126,21 @@ export const Top = () => {
       })
   }, [setTodos])
 
-  //ToDoの完了・未完了切り替えボタンを押した際の処理。
-  const handleToggleButtonClick = useCallback(
-    (id) => {
-      const targetTodo = todos.find((todo) => todo.id === id)//現在の完了状態を取得
-      const updatedStatus = !targetTodo.isCompleted; // 現在の完了状態を反転
+  // ToDoの完了・未完了切り替えボタンを押した際の処理。
+    const handleToggleButtonClick = useCallback(
+      (id) => {
+        const targetTodo = todos.find((todo) => todo.id === id)//現在の完了状態を取得
+        const updatedStatus = targetTodo.isCompleted; // 現在の完了状態を反映
 
-
-      axios.patch(`http://localhost:3000/todo/${id}/completion-status`, {
-        isCompleted: updatedStatus,
-      })// 反転された完了状態をサーバーに送信
-        .then(() => {
-          // ローカルの状態を更新して反映
-          setTodos((prevTodos) =>
-            prevTodos.map((todo) =>
-              todo.id === id ? { ...todo, isCompleted: updatedStatus } : todo
-            )//該当のToDo　id === todo.idのisCompletedをupdatedStatusに更新します。
-          );
-        })
+        axios.patch(`http://localhost:3000/todo/${id}/completion-status`, { isCompleted: updatedStatus })
+          .then(() => {
+            // ローカルの状態を更新して反映
+            setTodos((prevTodos) =>
+              prevTodos.map((todo) =>
+                todo.id === id ? { ...todo, isCompleted: !updatedStatus } : todo
+              )//該当のToDo　id === todo.idのisCompletedをupdatedStatusに反転して更新します。
+            );
+          })
         //処理が失敗した際の表示処理。
         .catch((error) => {
           switch (error.statusCode) {
@@ -162,10 +158,12 @@ export const Top = () => {
     [todos, setTodos]
   );
 
+
   //初期表示データの表示処理。
   useEffect(() => {
-    axios.get('http://localhost:3000/todo')
+    axios.get(`http://localhost:3000/todo`)
       .then(({ data }) => {
+        console.log('data', data)
         setTodos(data); // ToDoリストを状態に設定
       })
       .catch((error) => {
@@ -196,7 +194,7 @@ export const Top = () => {
               key={todo.id}
               todo={todo}
               onEditButtonClick={handleEditButtonClick} //編集ボタンが押された際に呼ばれる関数
-              onDeleteButtonClick={() => handleDeleteButtonClick(todo.id)} //削除ボタンが押された際に呼ばれる関数
+              onDeleteButtonClick={handleDeleteButtonClick}//削除ボタンが押された際に呼ばれる関数
               onToggleButtonClick={handleToggleButtonClick}//完了・未完了ボタンが押された際に呼ばれる関数
             />
           )
@@ -229,4 +227,4 @@ export const Top = () => {
       </ul>
     </Layout>
   )
-};
+}
