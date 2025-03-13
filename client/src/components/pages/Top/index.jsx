@@ -106,7 +106,6 @@ export const Top = () => {
       axios
         .delete(`http://localhost:3000/todo/${id}`)
         .then(({ data }) => {
-          console.log(data)
           setTodos(data)
         })
         .catch((error) => {
