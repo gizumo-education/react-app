@@ -79,7 +79,7 @@ export const Top = () => {
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
           setTodos((prevTodos) =>
-            prevTodos.map((todo) => (todo.id === editTodoId ? data : todo))
+            prevTodos.map((todo) => (todo.id === data.id ? data : todo))
           )
           setEditTodoId('')
           setIsAddTaskFormOpen(false)
@@ -105,9 +105,9 @@ export const Top = () => {
     (id) => {
       axios
         .delete(`http://localhost:3000/todo/${id}`)
-        .then(() => {
-          console.log(id)
-          setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id))
+        .then(({ data }) => {
+          console.log(data)
+          setTodos(data)
         })
         .catch((error) => {
           switch (error.statusCode) {
