@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import { memo } from 'react'
 
-import { Button } from '../Button' // 追加
-import { Icon } from '../Icon' // 追加
+import { Button } from '../Button'
+import { Icon } from '../Icon'
 
 
 import styles from './index.module.css'
@@ -83,7 +83,7 @@ ListItem.propTypes = {
     isCompleted: PropTypes.bool,
   }).isRequired,
   onEditButtonClick: PropTypes.func,
-  onDeleteButtonClick: PropTypes.func, // 追加
+  onDeleteButtonClick: PropTypes.func,
   onToggleButtonClick: PropTypes.func.isRequired,
 }
 ListItem.defaultProps = {

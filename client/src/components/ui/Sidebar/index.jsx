@@ -18,12 +18,10 @@ const NaviList = [
     path: '/completed',
     iconName: 'completeList',
   },
-  // ↑ 配列の中を全て置き換え
 ]
 
 export const Sidebar = memo(() => {
   return (
-  // ↓ returnの中を全て置き換え
     <ul className={styles.sidebar}>
       <li className={['sidebar-list']}>
         <p className={styles.category}>ToDo</p>
@@ -58,6 +56,5 @@ export const Sidebar = memo(() => {
         </ul>
       </li>
     </ul>
-  // ↑ returnの中を全て置き換え
   )
 })

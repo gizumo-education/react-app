@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil' // 追加
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { axios } from '../../../utils/axiosConfig'
-import { todoState, incompleteTodoListState } from '../../../stores/todoState' // 追加
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem'
@@ -141,6 +141,8 @@ export const Top = () => {
               )//該当のToDo　id === todo.idのisCompletedをupdatedStatusに反転して更新します。
             );
           })
+          // APIの仕様上反転して反映されてしまうため、一度押した際の完了状態を受け取り反映して、その後にメソッド内で反映された完了状態をさらに反転して反映する。
+
         //処理が失敗した際の表示処理。
         .catch((error) => {
           switch (error.statusCode) {
