@@ -8,17 +8,23 @@ import { Icon } from '../../ui/Icon'
 
 import styles from './index.module.css'
 import { errorToast } from '../../../utils/errorToast';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { incompleteTodoListState, todoState } from '../../../stores/todoState';
 
 export const Top = () => {
   /** TODO 一覧 */
-  const [todos, setTodos] = useState([]);
+  const todos = useRecoilValue(incompleteTodoListState);
+  const setTodos = useSetRecoilState(todoState);
+
   /** Form 入力値 */
   const [inputValues, setInputValues] = useState({
     title: '',
     description: '',
   });
+
   /** 追加フォーム開閉状態 */
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false);
+
   /** 編集中TodoID */
   const [editTodoId, setEditTodoId] = useState('');
 
@@ -57,7 +63,7 @@ export const Top = () => {
         errorToast(error.message);
       })
     },
-    [inputValues]
+    [setTodos, inputValues]
   )
 
   /** 編集保存ボタンクリック時処理 */
@@ -97,7 +103,7 @@ export const Top = () => {
           }
         })
     },
-    [editTodoId, inputValues]
+    [setTodos, editTodoId, inputValues]
   );
 
   /** 編集ボタンクリック時処理 */
@@ -134,7 +140,7 @@ export const Top = () => {
           }
         })
     },
-    []
+    [setTodos]
   )
 
   /** 完了・未完了切り替えボタンクリック時処理 */
@@ -163,7 +169,7 @@ export const Top = () => {
           }
         })
     },
-    [todos]
+    [todos, setTodos]
   )
 
   useEffect(() => {
@@ -171,7 +177,7 @@ export const Top = () => {
       .then(({ data }) => {
         setTodos(data);
       })
-  }, []);
+  }, [setTodos]);
 
   return (
     <Layout>
