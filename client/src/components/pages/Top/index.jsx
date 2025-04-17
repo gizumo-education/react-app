@@ -15,6 +15,8 @@ export const Top = () => {
     description: '',
   })
 
+  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
+
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       console.log(data)
