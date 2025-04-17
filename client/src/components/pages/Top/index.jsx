@@ -31,6 +31,16 @@ export const Top = () => {
     setInputValues((prev) => ({ ...prev, [name]: value }))
   }, [])
 
+  const handleCreateTodoSubmit = useCallback(
+    (event) => {
+      event.preventDefault()
+      axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
+        console.log(data)
+      })
+    },
+    [inputValues]
+  )
+
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       console.log(data)
@@ -56,6 +66,7 @@ export const Top = () => {
               value={inputValues}
               onChange={handleInputChange}
               onCancelClick={handleCancelButtonClick}
+              onSubmit={handleCreateTodoSubmit}
             />
           ) : (
             <Button
