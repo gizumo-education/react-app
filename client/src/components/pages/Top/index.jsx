@@ -22,6 +22,10 @@ export const Top = () => {
     setIsAddTaskFormOpen(true)
   }, [])
 
+  const handleCancelButtonClick = useCallback(() => {
+    setIsAddTaskFormOpen(false)
+  }, [])
+
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       console.log(data)
@@ -43,7 +47,7 @@ export const Top = () => {
         })}
         <li>
           {isAddTaskFormOpen ? (
-            <Form value={inputValues} />
+            <Form value={inputValues} onCancelClick={handleCancelButtonClick} />
           ) : (
             <Button
               buttonStyle='indigo-blue'
