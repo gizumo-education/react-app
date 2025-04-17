@@ -14,11 +14,17 @@ export const Top = () => {
     })
   }, [])
 
+  const listItems = [
+    { id: '1', title: 'React Hooks勉強', description: 'useState、useEffectについて', isCompleted: false },
+    { id: '2', title: 'React Router勉強', description: 'useHistory、useLocationについて', isCompleted: false },
+    { id: '3', title: 'Recoil勉強', description: 'atom、selectorについて', isCompleted: false },
+  ]
+
   return (
     <Layout>
       <h1 className={styles.heading}>ToDo一覧</h1>
       <ul className={styles.list}>
-        {todos.map((todo) => {
+        {listItems.map((todo) => {
           return <ListItem key={todo.id} todo={todo} />
         })}
       </ul>
