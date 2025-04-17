@@ -26,6 +26,11 @@ export const Top = () => {
     setIsAddTaskFormOpen(false)
   }, [])
 
+  const handleInputChange = useCallback((event) => {
+    const { name, value } = event.target
+    setInputValues((prev) => ({ ...prev, [name]: value }))
+  }, [])
+
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       console.log(data)
@@ -47,7 +52,11 @@ export const Top = () => {
         })}
         <li>
           {isAddTaskFormOpen ? (
-            <Form value={inputValues} onCancelClick={handleCancelButtonClick} />
+            <Form
+              value={inputValues}
+              onChange={handleInputChange}
+              onCancelClick={handleCancelButtonClick}
+            />
           ) : (
             <Button
               buttonStyle='indigo-blue'
