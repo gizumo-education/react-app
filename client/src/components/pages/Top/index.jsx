@@ -4,6 +4,7 @@ import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem'
 import { Button } from '../../ui/Button'
 import { Icon } from '../../ui/Icon'
+import { Form } from '../../ui/Form'
 
 import styles from './index.module.css'
 
@@ -37,15 +38,19 @@ export const Top = () => {
           return <ListItem key={todo.id} todo={todo} />
         })}
         <li>
-        <Button buttonStyle='indigo-blue' className={styles['add-task']}>
-          <Icon
-            iconName='plus'
-            color='orange'
-            size='medium'
-            className={styles['plus-icon']}
-          />
-          タスクを追加
-        </Button>
+          {isAddTaskFormOpen ? (
+            <Form value={inputValues} />
+          ) : (
+            <Button buttonStyle='indigo-blue' className={styles['add-task']}>
+              <Icon
+                iconName='plus'
+                color='orange'
+                size='medium'
+                className={styles['plus-icon']}
+              />
+              タスクを追加
+            </Button>
+          )}
       </li>
       </ul>
     </Layout>
