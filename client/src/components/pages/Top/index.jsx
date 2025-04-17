@@ -18,6 +18,10 @@ export const Top = () => {
 
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
+  const handleAddTaskButtonClick = useCallback(() => {
+    setIsAddTaskFormOpen(true)
+  }, [])
+
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       console.log(data)
@@ -41,7 +45,11 @@ export const Top = () => {
           {isAddTaskFormOpen ? (
             <Form value={inputValues} />
           ) : (
-            <Button buttonStyle='indigo-blue' className={styles['add-task']}>
+            <Button
+              buttonStyle='indigo-blue'
+              onClick={handleAddTaskButtonClick}
+              className={styles['add-task']}
+            >
               <Icon
                 iconName='plus'
                 color='orange'
