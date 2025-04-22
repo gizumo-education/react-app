@@ -35,15 +35,22 @@ export const Top = () => {
     (event) => {
       event.preventDefault()
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-        console.log(data)
+
+        setTodos(todos.push(data))
+
+        setIsAddTaskFormOpen(false)
+
+        setInputValues({
+          title: '',
+          description: '',
+        })
       })
     },
     [inputValues]
-  )
+    )
 
-  useEffect(() => {
-    axios.get('http://localhost:3000/todo').then(({ data }) => {
-      console.log(data)
+    useEffect(() => {
+      axios.get('http://localhost:3000/todo').then(({ data }) => {
     })
   }, [])
 
@@ -67,12 +74,12 @@ export const Top = () => {
               onChange={handleInputChange}
               onCancelClick={handleCancelButtonClick}
               onSubmit={handleCreateTodoSubmit}
-            />
-          ) : (
-            <Button
-              buttonStyle='indigo-blue'
-              onClick={handleAddTaskButtonClick}
-              className={styles['add-task']}
+              />
+              ) : (
+                <Button
+                buttonStyle='indigo-blue'
+                onClick={handleAddTaskButtonClick}
+                className={styles['add-task']}
             >
               <Icon
                 iconName='plus'
