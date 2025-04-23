@@ -10,6 +10,7 @@ import styles from './index.module.css'
 
 export const Top = () => {
   const [todos, setTodos] = useState([])
+  const [editTodoId, setEditTodoId] = useState('')
 
   const [inputValues, setInputValues] = useState({
     title: '',
@@ -19,10 +20,13 @@ export const Top = () => {
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
   const handleAddTaskButtonClick = useCallback(() => {
+    setInputValues({ title: '', description: '' })
+    setEditTodoId('')
     setIsAddTaskFormOpen(true)
   }, [])
 
   const handleCancelButtonClick = useCallback(() => {
+    setEditTodoId('')
     setIsAddTaskFormOpen(false)
   }, [])
 
@@ -35,11 +39,8 @@ export const Top = () => {
     (event) => {
       event.preventDefault()
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-
-        setTodos(todos.push(data))
-
+        setTodos((prevTodos) => [...prevTodos, data])
         setIsAddTaskFormOpen(false)
-
         setInputValues({
           title: '',
           description: '',
@@ -47,10 +48,35 @@ export const Top = () => {
       })
     },
     [inputValues]
-    )
+  )
+
+  const handleEditedTodoSubmit = useCallback(
+    (event) => {
+      event.preventDefault()
+      axios
+        .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
+        .then(({ data }) => {
+          console.log(data)
+        })
+    },
+    [editTodoId, inputValues]
+  )
+
+  const handleEditButtonClick = useCallback((id) => {
+    setIsAddTaskFormOpen(false)
+    setEditTodoId(id)
+    const targetTodo = todos.find((todo) => todo.id === id)
+    setInputValues({
+      title: targetTodo.title,
+      description: targetTodo.description,
+    })
+    },
+    [todos]
+  )
 
     useEffect(() => {
       axios.get('http://localhost:3000/todo').then(({ data }) => {
+        setTodos(data)
     })
   }, [])
 
@@ -64,8 +90,25 @@ export const Top = () => {
     <Layout>
       <h1 className={styles.heading}>ToDo一覧</h1>
       <ul className={styles.list}>
-        {listItems.map((todo) => {
-          return <ListItem key={todo.id} todo={todo} />
+        {todos.map((todo) => {
+          if (editTodoId === todo.id) {
+            return (
+              <li key={todo.id}>
+                <Form
+                  value={inputValues}
+                  ditTodoId={editTodoId}
+                  onChange={handleInputChange}
+                  onCancelClick={handleCancelButtonClick}
+                  onSubmit={handleEditedTodoSubmit}
+                />
+              </li>
+            )
+          }
+          return <ListItem
+            key={todo.id}
+            todo={todo}
+            onEditButtonClick={handleEditButtonClick}
+          />
         })}
         <li>
           {isAddTaskFormOpen ? (
