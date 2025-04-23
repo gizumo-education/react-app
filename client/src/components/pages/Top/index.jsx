@@ -56,7 +56,13 @@ export const Top = () => {
       axios
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
-          console.log(data)
+          todos.map((todo) => {
+            if (todo.id === data.id) {
+              todo = data;
+            }
+            return todo;
+          })
+          setEditTodoId('')
         })
     },
     [editTodoId, inputValues]
@@ -78,7 +84,7 @@ export const Top = () => {
       axios.get('http://localhost:3000/todo').then(({ data }) => {
         setTodos(data)
     })
-  }, [])
+  }, [todos])
 
   const listItems = [
     { id: '1', title: 'React Hooks勉強', description: 'useState、useEffectについて', isCompleted: false },
