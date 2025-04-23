@@ -81,7 +81,9 @@ export const Top = () => {
   )
 
   const handleDeleteButtonClick = useCallback((id) => {
-    axios.delete(`http://localhost:3000/todo/${id}`)
+    axios.delete(`http://localhost:3000/todo/${id}`).then(({data}) => {
+      setTodos(data)
+    })
   }, [])
 
     useEffect(() => {
