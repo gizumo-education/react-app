@@ -1,5 +1,3 @@
-// ui/Form/index.jsx
-
 import PropTypes from 'prop-types'
 import { memo } from 'react'
 import { Button } from '../Button'
