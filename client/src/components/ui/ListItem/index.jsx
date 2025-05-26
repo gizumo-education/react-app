@@ -1,5 +1,3 @@
-// ui/ListItem/index.jsx
-
 import PropTypes from 'prop-types'
 import { memo } from 'react'
 
