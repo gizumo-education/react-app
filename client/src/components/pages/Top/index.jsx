@@ -85,6 +85,30 @@ export const Top = () => {
       })
   }, [])
 
+  const handleToggleButtonClick = useCallback(
+    (id) => {
+      const targetTodo = todos.find((todo) => todo.id === id); //一度変数に保存しておく
+      const updatedStatus = !targetTodo.isCompleted;
+
+      axios
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+           isCompleted: targetTodo.isCompleted,   //targetTodoで中身を省略
+        })
+        .then(({ data }) => {
+          console.log(data)
+          setTodos(
+          todos.map((todo) =>
+            todo.id === id
+              ? { ...todo, isCompleted: updatedStatus } 
+              : todo
+          )
+        );
+        });
+    },
+    [todos]
+  )
+
+
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       console.log(data)
@@ -115,6 +139,7 @@ export const Top = () => {
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
               onDeleteButtonClick={handleDeleteButtonClick}
+              onToggleButtonClick={handleToggleButtonClick}
             />
           )
         })}
