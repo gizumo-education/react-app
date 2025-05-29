@@ -39,8 +39,7 @@ export const Top = () => {
   const handleCreateTodoSubmit = useCallback(
     (event) => { 
       event.preventDefault() 
-      axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-        console.log(data)    
+      axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {   
         setTodos((prev) => [...prev, data]) 
         setIsAddTaskFormOpen(false)         
         setInputValues({ title: '', description: '' })  
@@ -60,7 +59,6 @@ export const Top = () => {
       axios
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues) 
         .then(({ data }) => {
-          console.log(data)
           setTodos((prevTodos) =>  
             prevTodos.map((todo) =>  
               todo.id === data.id ? data : todo 
@@ -103,10 +101,9 @@ export const Top = () => {
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`)  
       .then(({data}) => {
-        console.log(data)
-          setTodos((prevTodos) => 
-            prevTodos.filter((todo) => todo.id !== id)  
-          ) 
+        setTodos((prevTodos) => 
+          prevTodos.filter((todo) => todo.id !== id)  
+        ) 
       })
       .catch((error) => {
         switch (error.statusCode) { 
@@ -127,15 +124,14 @@ export const Top = () => {
   //ユーザーが完了ボタンか未完了に戻すボタンをクリックした時=対象のタスクの id を受け取る。
   const handleToggleButtonClick = useCallback(
     (id) => {
-      const targetTodo = todos.find((todo) => todo.id === id); // 
-      const updatedStatus = !targetTodo.isCompleted;  
+      const targetTodo = todos.find((todo) => todo.id === id)
+      const updatedStatus = !targetTodo.isCompleted
 
       axios
         .patch(`http://localhost:3000/todo/${id}/completion-status`, {  
            isCompleted: targetTodo.isCompleted,   
         })
         .then(({ data }) => {
-          console.log(data)
           setTodos(  
           todos.map((todo) =>
             todo.id === id
@@ -164,7 +160,6 @@ export const Top = () => {
   // ToDoアプリの画面を開いた時に今のタスクリストが表示される
   useEffect(() => {  
     axios.get('http://localhost:3000/todo').then(({ data }) => {  
-      console.log(data)
       setTodos(data)  
     })               
     .catch((error) => {
