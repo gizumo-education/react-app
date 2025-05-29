@@ -10,28 +10,28 @@ import { errorToast } from '../../../utils/errorToast'
 import styles from './index.module.css'
 
 export const Top = () => {  
-  const [todos, setTodos] = useState([])  // 書き込んだ内容todosを使って画面に表示する。setTodos()を使って＝データを書き込むuseState([])空の状態
-  const [editTodoId, setEditTodoId] = useState('') //「どのToDoを今編集してるか」を覚えておくための状態
-  const [inputValues, setInputValues] = useState({ //タスクを追加・編集するフォームの入力内容を保存する状態。
+  const [todos, setTodos] = useState([])  
+  const [editTodoId, setEditTodoId] = useState('') 
+  const [inputValues, setInputValues] = useState({ 
     title: '',
     description: '',
   })
-  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)  //「追加フォームを表示するかどうか」のON/OFFスイッチ。→ ＋追加ボタンを押す
+  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)  
 
-  const handleAddTaskButtonClick = useCallback(() => {  //「＋タスク追加」ボタンをクリックしたとき
-    setInputValues({ title: '', description: '' }) // 入力欄を空にする
-    setEditTodoId('')  // 編集モードを解除
-    setIsAddTaskFormOpen(true)  // フォームを表示する
+  const handleAddTaskButtonClick = useCallback(() => {  
+    setInputValues({ title: '', description: '' }) 
+    setEditTodoId('')  
+    setIsAddTaskFormOpen(true)  
   }, [])
 
   const handleCancelButtonClick = useCallback(() => { 
-    setEditTodoId('')  // 編集中状態を解除（IDを空に）
-    setIsAddTaskFormOpen(false)  // フォームを非表示にする
+    setEditTodoId('')  
+    setIsAddTaskFormOpen(false)  
   }, [])
   
-  const handleInputChange = useCallback((event) => {  // フォームの入力欄に文字を入力したとき
-    const { name, value } = event.target   // 入力欄の名前とその時の入力内容（value）を取り出しどの入力欄かを特定しる
-      setInputValues((prev) => ({ ...prev, [name]: value })) //入力された内容をinputValuesに反映する。
+  const handleInputChange = useCallback((event) => {  
+    const { name, value } = event.target   
+      setInputValues((prev) => ({ ...prev, [name]: value })) 
   }, [])
 
   // Section15 練習問題
@@ -40,16 +40,16 @@ export const Top = () => {
     (event) => { 
       event.preventDefault() 
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-        console.log(data)  // サーバーが返した更新済みのデータを表示  
-        setTodos((prev) => [...prev, data]) // // 今のToDoリストに新しいToDo（data）を追加して、画面に反映
-        setIsAddTaskFormOpen(false)         // フォームを非表示して、リスト状態に戻す
-        setInputValues({ title: '', description: '' })  // 入力欄を空にする
+        console.log(data)    
+        setTodos((prev) => [...prev, data]) 
+        setIsAddTaskFormOpen(false)         
+        setInputValues({ title: '', description: '' })  
       })
       .catch((error) => {
         errorToast(error.message)
       })
     },
-    [inputValues]  // フォームに入力された値
+    [inputValues]  
   )
 
   // Section16 練習問題
@@ -58,15 +58,15 @@ export const Top = () => {
     (event) => {
       event.preventDefault()
       axios
-        .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues) // 入力された新しい内容を使って、IDに対応するサーバーデータを更新依頼する
+        .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues) 
         .then(({ data }) => {
           console.log(data)
-          setTodos((prevTodos) =>  // 今のToDo一覧を取得して、次の状態を作るための関数を渡す
-            prevTodos.map((todo) =>  // 一覧の中の各タスクを1つずつ取り出してループ
-              todo.id === data.id ? data : todo // 編集されたタスクのIDと一致するなら、新しいデータに置き換える。それ以外はそのまま残す
+          setTodos((prevTodos) =>  
+            prevTodos.map((todo) =>  
+              todo.id === data.id ? data : todo 
             )
           )
-          setEditTodoId('') // 編集が終わったときの処理を行う
+          setEditTodoId('') 
         })
         .catch((error) => {
           switch (error.statusCode) { 
@@ -82,7 +82,7 @@ export const Top = () => {
           }
         })
     },
-    [editTodoId, inputValues] //編集内容が変わったら処理も最新になる
+    [editTodoId, inputValues] 
   )
 
   const handleEditButtonClick = useCallback((id) => {
@@ -101,11 +101,11 @@ export const Top = () => {
   // Section17 練習問題
   //「削除」ボタンをクリックした時＝削除したいタスクのIDを引数でもらう
   const handleDeleteButtonClick = useCallback((id) => {
-    axios.delete(`http://localhost:3000/todo/${id}`)  // 削除ボタンを押したToDoのIDを使って、サーバーに削除のリクエストを送る
+    axios.delete(`http://localhost:3000/todo/${id}`)  
       .then(({data}) => {
         console.log(data)
-          setTodos((prevTodos) => // ← 現在のタスク一覧（prevTodos）から
-            prevTodos.filter((todo) => todo.id !== id)  // 削除したタスク（指定されたID）だけを除外して新しい一覧を作る
+          setTodos((prevTodos) => 
+            prevTodos.filter((todo) => todo.id !== id)  
           ) 
       })
       .catch((error) => {
@@ -116,7 +116,7 @@ export const Top = () => {
             )
             break
 
-          default:  // それ以外のエラー
+          default: 
             errorToast(error.message)
             break
         }
@@ -128,15 +128,15 @@ export const Top = () => {
   const handleToggleButtonClick = useCallback(
     (id) => {
       const targetTodo = todos.find((todo) => todo.id === id); // 
-      const updatedStatus = !targetTodo.isCompleted;  //今の状態（完了/未完了）を逆にする。
+      const updatedStatus = !targetTodo.isCompleted;  
 
       axios
-        .patch(`http://localhost:3000/todo/${id}/completion-status`, {  //完了状態を変更してくれとリクエストする。
-           isCompleted: targetTodo.isCompleted,   //targetTodoで中身を省略
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {  
+           isCompleted: targetTodo.isCompleted,   
         })
         .then(({ data }) => {
           console.log(data)
-          setTodos(  // 画面側のリストも最新の状態にする。
+          setTodos(  
           todos.map((todo) =>
             todo.id === id
               ? { ...todo, isCompleted: updatedStatus } 
@@ -163,9 +163,9 @@ export const Top = () => {
   // Section14 練習問題
   // ToDoアプリの画面を開いた時に今のタスクリストが表示される
   useEffect(() => {  
-    axios.get('http://localhost:3000/todo').then(({ data }) => {  // このURLに対してGETリクエストを送り、今登録されているToDo一覧を取得する。
+    axios.get('http://localhost:3000/todo').then(({ data }) => {  
       console.log(data)
-      setTodos(data)  //  取得したリストのデータ＝dataを、todosという状態に保存するための処理。
+      setTodos(data)  
     })               
     .catch((error) => {
       errorToast(error.message)
