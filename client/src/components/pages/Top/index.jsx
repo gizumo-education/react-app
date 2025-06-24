@@ -86,8 +86,6 @@ export const Top = () => {
   // 消去
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
-      console.log(data)
-      console.log(data.filter((todo) => todo.id !== id))
       setTodos((data))  
     },)
     .catch((error) => {

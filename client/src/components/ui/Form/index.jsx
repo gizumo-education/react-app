@@ -58,6 +58,6 @@ Form.propTypes = {
   onCancelClick: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
 }
-    Form.defaultProps = {
-      editTodoId: '',
-    }
+Form.defaultProps = {
+  editTodoId: '',
+}
