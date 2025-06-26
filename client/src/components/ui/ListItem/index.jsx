@@ -39,9 +39,15 @@ export const ListItem = memo(({ todo, onEditButtonClick, onDeleteButtonClick, on
           {todo.title}
         </div>
         {todo.description && (
-          <div className={styles.description}>{todo.description}</div>
+          <div className={`${styles.description} ${
+            todo.isCompleted ? styles['task-completed'] : ''
+          }`}
+          >
+            {todo.description}
+          </div>
         )}
       </div>
+
       <div className={styles['task-action']}>
         <Button
           buttonStyle='icon-only'
@@ -55,11 +61,7 @@ export const ListItem = memo(({ todo, onEditButtonClick, onDeleteButtonClick, on
         >
           <Icon iconName='trash' color='indigo-blue' size='medium' />
         </Button>
-    </div>
-
-
-
-
+      </div>
 
     </li>
   )
