@@ -1,5 +1,7 @@
 import { useState, useEffect ,useCallback } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { axios } from '../../../utils/axiosConfig'
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem'
@@ -10,7 +12,8 @@ import { errorToast } from '../../../utils/errorToast'
 import styles from './index.module.css'
 
 export const Top = () => {
-  const [todos, setTodos] = useState([])
+  const setTodos = useSetRecoilState(todoState)
+  const todos = useRecoilValue(incompleteTodoListState)
   const [editTodoId, setEditTodoId] = useState('')
   const [inputValues, setInputValues] = useState({
     title: '',
@@ -45,7 +48,7 @@ export const Top = () => {
       .catch((error) => {
         errorToast(error.message)
       })
-    },[inputValues])
+    },[setTodos, inputValues])
 
   const handleEditedTodoSubmit = useCallback(
     (event) => {
@@ -73,7 +76,7 @@ export const Top = () => {
               break
           }
         })
-    },[editTodoId, inputValues])
+    },[setTodos, editTodoId, inputValues])
 
   const  handleEditButtonClick = useCallback((id) => {
     setIsAddTaskFormOpen(false) 
@@ -84,7 +87,7 @@ export const Top = () => {
       title: targetTodo.title,
       description: targetTodo.description,
     })
-  }, [todos])
+  }, [todos, setTodos])
 
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
@@ -103,7 +106,7 @@ export const Top = () => {
           break
       }
     })
-  }, [])
+  }, [setTodos])
 
   const handleToggleButtonClick = useCallback((id) => {
     axios
@@ -128,7 +131,7 @@ export const Top = () => {
             break
         }
       })
-  },[todos])
+  },[todos, setTodos])
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({data}) => {
@@ -137,7 +140,7 @@ export const Top = () => {
     .catch((error) => {
       errorToast(error.message)
     })
-  }, [])
+  }, [setTodos])
 
   return (
     <Layout>

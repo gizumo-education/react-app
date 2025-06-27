@@ -49,20 +49,24 @@ export const ListItem = memo(({ todo, onEditButtonClick, onDeleteButtonClick, on
       </div>
 
       <div className={styles['task-action']}>
-        <Button
-          buttonStyle='icon-only'
-          onClick={() => onEditButtonClick(todo.id)}
-        >
-          <Icon iconName='edit' color='indigo-blue' size='medium' />
-        </Button>
-        <Button
-          buttonStyle='icon-only'
-          onClick={() => onDeleteButtonClick(todo.id)}
-        >
-          <Icon iconName='trash' color='indigo-blue' size='medium' />
-        </Button>
+        
+        {!todo.isCompleted && (
+          <>
+            <Button
+              buttonStyle='icon-only'
+              onClick={() => onEditButtonClick(todo.id)}
+            >
+              <Icon iconName='edit' color='indigo-blue' size='medium' />
+            </Button>
+            <Button
+              buttonStyle='icon-only'
+              onClick={() => onDeleteButtonClick(todo.id)}
+            >
+              <Icon iconName='trash' color='indigo-blue' size='medium' />
+            </Button>
+          </>
+        )}
       </div>
-
     </li>
   )
 })
@@ -74,7 +78,12 @@ ListItem.propTypes = {
     description: PropTypes.string,
     isCompleted: PropTypes.bool.isRequired,
   }).isRequired,
-  onEditButtonClick: PropTypes.func.isRequired,
-  onDeleteButtonClick: PropTypes.func.isRequired, 
+  onEditButtonClick: PropTypes.func,
+  onDeleteButtonClick: PropTypes.func,
   onToggleButtonClick: PropTypes.func.isRequired,
+}
+
+ListItem.defaultProps = {
+  onEditButtonClick: () => {},
+  onDeleteButtonClick: () => {},
 }
