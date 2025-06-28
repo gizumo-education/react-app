@@ -81,6 +81,14 @@ export const Top = () => {
     })
   }, [todos])
 
+  // タスク削除
+  const handleDeleteButtonClick = useCallback((id) => {
+    axios.delete(`http://localhost:3000/todo/${id}`).then(({data}) => {
+      console.log(data);
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id))
+    })
+  }, [])
+
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       console.log(data)
@@ -112,6 +120,7 @@ export const Top = () => {
               key={todo.id}
               todo={todo} 
               onEditButtonClick={handleEditButtonClick}
+              onDeleteButtonClick={handleDeleteButtonClick}
             />
           )
         })}
