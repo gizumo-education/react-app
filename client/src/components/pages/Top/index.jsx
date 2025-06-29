@@ -6,7 +6,6 @@ import { ListItem } from '../../ui/ListItem'
 import { Button } from '../../ui/Button'
 import { Icon } from '../../ui/Icon'
 
-
 import styles from './index.module.css'
 import { Form } from '../../ui/Form'
 
@@ -17,7 +16,15 @@ export const Top = () => {
     title: '',
     description: '',
   })
+
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/todo').then(({ data }) => {
+      console.log(data)
+      setTodos(data)
+    })
+  }, [])
 
   const handleAddTaskButtonClick = useCallback(() => {
     setInputValues({ title: '', description: '' })
@@ -71,6 +78,7 @@ export const Top = () => {
     [editTodoId, inputValues]
   )
 
+  // 編集ボタンクリック時に編集フォームを表示
   const handleEditButtonClick = useCallback((id) => {
     setIsAddTaskFormOpen(false)
     setEditTodoId(id)
@@ -89,12 +97,17 @@ export const Top = () => {
     })
   }, [])
 
-  useEffect(() => {
-    axios.get('http://localhost:3000/todo').then(({ data }) => {
-      console.log(data)
-      setTodos(data)
-    })
-  }, [])
+  //タスク完了 
+  const handleToggleButtonClick = useCallback(
+    (id) => {
+      axios.patch(`http://localhost:3000/todo/${id}/completion-status`, {
+          isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+        })
+        .then(({ data }) => {
+          console.log(data)
+          setTodos(prevTodos => prevTodos.map(todo => (todo.id === id ? data : todo)))
+        })
+    },[todos])
 
   return (
     <Layout>
@@ -121,6 +134,7 @@ export const Top = () => {
               todo={todo} 
               onEditButtonClick={handleEditButtonClick}
               onDeleteButtonClick={handleDeleteButtonClick}
+              onToggleButtonClick={handleToggleButtonClick}
             />
           )
         })}
