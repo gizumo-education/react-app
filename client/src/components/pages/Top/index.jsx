@@ -9,6 +9,7 @@ import { Icon } from '../../ui/Icon'
 import styles from './index.module.css'
 import { Form } from '../../ui/Form'
 import { BiEdit } from 'react-icons/bi'
+import { errorToast } from '../../../utils/errorToast'
 
 export const Top = () => {
   const [todos, setTodos] = useState([])
@@ -51,7 +52,7 @@ export const Top = () => {
         setInputValues({ title: '', description: ''})
       })
       .catch((error) => {
-        console.error('ToDoの追加に失敗しました', error)
+        errorToast(error.message)
       })
     },
     [inputValues]
@@ -72,9 +73,20 @@ export const Top = () => {
 
           // 2 編集フォームを非表示
           setEditTodoId('')
-        }).catch((error) => {
-          console.log('Todoの編集に失敗しました')
         })
+
+      .catch((error) => {
+        switch (error.statusCode) {
+          case 404:
+            errorToast(
+              '更新するToDoが見つかりませんでした。画面を更新して再度お試し下さい。'
+            )
+            break
+            default:
+              errorToast(error.message)
+              break
+        }
+      })
     },
     [editTodoId, inputValues]
   )
@@ -96,8 +108,18 @@ export const Top = () => {
     axios.delete(`http://localhost:3000/todo/${id}`).then(({data}) => {
       // stateから該当todoを除外、反映
       setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id)) // このtodoのidが、削除対象のidと違う場合
-    }).catch((error) => {
-      console.log('削除できませんでした', error)
+    })
+    .catch((error) => {
+      switch (error.statusCode) {
+        case 404:
+          errorToast(
+            '削除するToDoが見つかりませんでした。画面を更新して再度お試し下さい。'
+          )
+          break
+          default:
+            errorToast(error.message)
+            break
+      }
     })
   }, [])
   // prevState が「直前の todos 配列」
@@ -112,8 +134,18 @@ export const Top = () => {
           todo.id === id ? {...todo, isCompleted: data.isCompleted} : todo
       )
     )
-    }).catch((error) => {
-      console.log('完了の切り替えに失敗しました', error)
+    })
+    .catch((error) => {
+      switch (error.statusCode) {
+        case 404:
+          errorToast(
+            '完了・未完了を切り替えるToDoが見つかりません。画面を更新して再度お試し下さい。'
+          )
+          break
+          default:
+            errorToast(error.message)
+            break
+      }
     })
   }, [todos]
   )
@@ -122,6 +154,9 @@ export const Top = () => {
       axios.get('http://localhost:3000/todo').then(({data}) => {
         // console.log(data)
         setTodos(data)
+      })
+      .catch((error) => {
+        errorToast(error.message)
       })
     }, [])
 
