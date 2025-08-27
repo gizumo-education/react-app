@@ -6,6 +6,8 @@ import { Icon } from '../Icon'
 
 import styles from './index.module.css'
 
+//ListItemコンポーネントは、ToDoのデータを受け取って、ToDoのタイトルと説明を表示するコンポーネント
+
 export const ListItem = memo(({ todo, onEditButtonClick, onDeleteButtonClick, onToggleButtonClick }) => {
   return (
     <li className={styles['list-item']}>
@@ -43,13 +45,13 @@ export const ListItem = memo(({ todo, onEditButtonClick, onDeleteButtonClick, on
       <div className={styles['task-action']}>
         <Button
           buttonStyle='icon-only'
-          onClick={() => onEditButtonClick(todo.id)}
+          onClick={() => onEditButtonClick(todo.id)}//クリックで親の編集開始関数を呼ぶ
         >
           <Icon iconName='edit' color='indigo-blue' size='medium' />
         </Button>
         <Button
           buttonStyle='icon-only'
-          onClick={() => onDeleteButtonClick(todo.id)}
+          onClick={() => onDeleteButtonClick(todo.id)}// 親の削除関数にIDを渡して呼ぶ
         >
           <Icon iconName='trash' color='indigo-blue' size='medium' />
         </Button>

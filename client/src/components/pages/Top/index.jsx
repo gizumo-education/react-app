@@ -12,38 +12,35 @@ import { errorToast } from '../../../utils/errorToast'//エラーハンドリン
 import styles from './index.module.css'
 
 export const Top = () => {
-  const [todos, setTodos] = useState([])
-  const [editTodoId, setEditTodoId] = useState('')
-  const [inputValues, setInputValues] = useState({
+  const [todos, setTodos] = useState([])//todo一覧を管理している
+  const [editTodoId, setEditTodoId] = useState('')//どのtodoを編集中か
+  const [inputValues, setInputValues] = useState({//入力内容を保持している
     title: '',
     description: '',
   })
-  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
+  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)//フォームが開いているか
 
-  const handleAddTaskButtonClick = useCallback(() => {
+
+
+
+
+  const handleAddTaskButtonClick = useCallback(() => {//タスクの追加ボタン押下時、入力欄は空にして、開いていたら編集モードは終わらせて、追加フォームを開く
     setInputValues({ title: '', description: '' })
     setEditTodoId('')
     setIsAddTaskFormOpen(true)
   }, [])
 
-  const handleCancelButtonClick = useCallback(() => {
-    setEditTodoId('')
-    setIsAddTaskFormOpen(false)
+  const handleInputChange = useCallback((event) => {//どの項目（name）に何が入ったか取得、既存値を保ちつつ、その項目だけ上書、
+    const { name, value } = event.target//event.target は「どの入力欄が変更されたか」を示すDOM要素。event.target.name と event.target.value で「どの入力欄か」「値」を取得
+    setInputValues((prev) => ({ ...prev, [name]: value }))//setInputValues で状態更新
   }, [])
 
-  const handleInputChange = useCallback((event) => {
-    const { name, value } = event.target
-    setInputValues((prev) => ({ ...prev, [name]: value }))
-  }, [])
-
-  const handleCreateTodoSubmit = useCallback(
+  const handleCreateTodoSubmit = useCallback(//追加フォーム送信時、ページ遷移をやめ、APIへ新規作成をPOST
     (event) => {
       event.preventDefault()
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
 
-        // ★★★★★
-        // ↓todoの追加_1追加したToDoを一覧に反映_2フォームを閉じる3_入力欄を空にする
-        setTodos((prev) => [...prev, data])
+        setTodos((prev) => [...prev, data])//既存配列をコピー＋末尾に追加、追加フォームを閉じる、入力欄を空にする
         setIsAddTaskFormOpen(false)
         setInputValues({
           title: '',
@@ -58,23 +55,45 @@ export const Top = () => {
         })
 
     },
-    [inputValues]
+    [inputValues]//入力値が変わるたびに最新の関数に作り直す
   )
 
-  const handleEditedTodoSubmit = useCallback(
+
+
+
+
+
+  const handleEditButtonClick = useCallback((id) => {//編集ボタンで呼び出し、新規追加は閉じ、このidを編集中にする、
+    setIsAddTaskFormOpen(false)
+    setEditTodoId(id)
+    const targetTodo = todos.find((todo) => todo.id === id)//idで対象todoを検索
+    setInputValues({//今入っている値をフォームに表示する
+      title: targetTodo.title,
+      description: targetTodo.description,
+    })
+  }, [todos])//todosに依存、一覧が変わったときに検索結果も変わるため
+
+  const handleEditedTodoSubmit = useCallback(//編集フォームの送信、画面推移をキャンセル
     (event) => {
       event.preventDefault()
       axios
-        .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
+        .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)// ← APIへ更新をパッチ
         //.patch(`http://localhost:3000/todo/editTodoId`, inputValues) エラー起こしたい時用
         .then(({ data }) => {
           // ★★★追加↓編集したToDoを一覧に反映
           setTodos((prev) =>
             prev.map((todo) =>
+              // #### ? #### : ####
               todo.id === editTodoId ? { ...todo, ...data } : todo
+                // if (todo.id === editTodoId) {
+                //   return { ...todo, ...data };
+                // } else {
+                //   return todo;
+                // }
+                //idが一致したもののみ差し替え
             )
           )
-          // ★★★追加↓編集フォームを閉じる
+          // ★★★追加↓編集フォームを閉じる・ListItem表示に戻る
           setEditTodoId('')
 
           console.log('編集成功:', data)
@@ -97,22 +116,17 @@ export const Top = () => {
     [editTodoId, inputValues]
   )
 
-  const handleEditButtonClick = useCallback((id) => {
-    setIsAddTaskFormOpen(false)
-    setEditTodoId(id)
-    const targetTodo = todos.find((todo) => todo.id === id)
-    setInputValues({
-      title: targetTodo.title,
-      description: targetTodo.description,
-    })
-  }, [todos])
+
+
+
+
 
   const handleDeleteButtonClick = useCallback((id) => {//★★★↓todoの削除追加部分
     axios
-      .delete(`http://localhost:3000/todo/${id}`)
-      .then(() => {
-        // ★★★ ここでtodosから削除した要素を除く
-        setTodos((prev) => prev.filter((todo) => todo.id !== id))
+      .delete(`http://localhost:3000/todo/${id}`)//apiに削除リクエスト/サーバーの話
+      .then((res) => {
+        setTodos(res.data)
+        // setTodos((prev) => prev.filter((todo) => todo.id !== id))//対象ID以外を残す・画面表示から消す
         console.log(`削除成功: ID=${id}`)
       })
       .catch((error) => {
@@ -130,16 +144,22 @@ export const Top = () => {
       })
   }, [])
 
-  const handleToggleButtonClick = useCallback(
+
+
+
+
+
+
+  const handleToggleButtonClick = useCallback(//ListItemの完了ボタンから呼ばれる
     (id) => {
       axios
-        .patch(`http://localhost:3000/todo/${id}/completion-status`, {
-          isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {//完了状態を更新・パッチは一部を更新するときに使う .getや.putの仲間
+          isCompleted: todos.find((todo) => todo.id === id).isCompleted,//現在の状態を送っている
         })
-        .then(({ data }) => {//★★★ToDoの状態変更（完了・未完了の切り替え）の追記
+        .then(({ data }) => {//★★★ToDoの状態変更（完了・未完了の切り替え）の追記/返ってきたisCompletedを採用
           setTodos((prev) =>
             prev.map((todo) =>
-              todo.id === id ? { ...todo, isCompleted: data.isCompleted } : todo
+              todo.id === id ? { ...todo, isCompleted: data.isCompleted } : todo//該当要素だけisCompletedを更新　data.isCompletedが返ってきた状態
             )
           )
           console.log(data)
@@ -162,6 +182,21 @@ export const Top = () => {
     [todos]
   )
 
+
+
+
+
+
+
+
+  const handleCancelButtonClick = useCallback(() => {
+    setEditTodoId('')
+    setIsAddTaskFormOpen(false)
+  }, [])
+
+
+
+  //一覧表示はuseEffectのToDoの一覧を取得するand,Layoutの取得したToDoの一覧を表示する
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       setTodos(data) //★★★★★←追加
@@ -173,6 +208,7 @@ export const Top = () => {
       })
   }, [])
 
+  //編集中のid(editTodoID)とidが一致したら編集フォーム、それ以外は普通のListItem表示
   return (
     <Layout>
       <h1 className={styles.heading}>ToDo一覧</h1>
@@ -182,20 +218,21 @@ export const Top = () => {
             return (
               <li key={todo.id}>
                 <Form
-                  value={inputValues}
-                  editTodoId={editTodoId}
-                  onChange={handleInputChange}
-                  onCancelClick={handleCancelButtonClick}
-                  onSubmit={handleEditedTodoSubmit}
+                  value={inputValues} //既存値がセット済み
+                  editTodoId={editTodoId} //ラベル切り替え（保存/追加）に使う
+                  onChange={handleInputChange} //入力の都度、親のstateを更新
+                  onCancelClick={handleCancelButtonClick} //キャンセルで編集モード解除
+                  onSubmit={handleEditedTodoSubmit} //送信でPATCH
                 />
               </li>
             )
           }
-          return <ListItem key={todo.id} todo={todo} onEditButtonClick={handleEditButtonClick} onDeleteButtonClick={handleDeleteButtonClick} onToggleButtonClick={handleToggleButtonClick} /> //★質問する事★onEditButtonClick追加で元のやつ消えたけど問題ないか
+          return <ListItem key={todo.id} todo={todo} onEditButtonClick={handleEditButtonClick} onDeleteButtonClick={handleDeleteButtonClick} onToggleButtonClick={handleToggleButtonClick} />
         })}
-        {/* ここまで一覧表示 */}
+        {/* ここまで一覧表示・ここからタスクの追加ボタン */}
+
         <li>
-          {isAddTaskFormOpen ? (
+          {isAddTaskFormOpen ? (//trueなら入力フォーム、falseならタスクの追加ボタン
             <Form value={inputValues} onChange={handleInputChange} onCancelClick={handleCancelButtonClick} onSubmit={handleCreateTodoSubmit} />
           ) : (
             <Button buttonStyle='indigo-blue' onClick={handleAddTaskButtonClick} className={styles['add-task']}>
