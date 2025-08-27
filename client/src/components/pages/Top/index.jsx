@@ -95,11 +95,28 @@ export const Top = () => {
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`).then(({data}) => {
       // stateから該当todoを除外、反映
-      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id))
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id)) // このtodoのidが、削除対象のidと違う場合
     }).catch((error) => {
       console.log('削除できませんでした', error)
     })
   }, [])
+  // prevState が「直前の todos 配列」
+
+  const handleToggleButtonClick = useCallback((id) => {
+    axios.patch(`http://localhost:3000/todo/${id}/completion-status`, {
+      isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+    })
+    .then(({data}) => {
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo.id === id ? {...todo, isCompleted: data.isCompleted} : todo
+      )
+    )
+    }).catch((error) => {
+      console.log('完了の切り替えに失敗しました', error)
+    })
+  }, [todos]
+  )
 
     useEffect(() => {
       axios.get('http://localhost:3000/todo').then(({data}) => {
@@ -133,6 +150,7 @@ export const Top = () => {
                 todo={todo}
                 onEditButtonClick={handleEditButtonClick}
                 onDeleteButtonClick={handleDeleteButtonClick}
+                onToggleButtonClick={handleToggleButtonClick}
               />
             )
           })}
