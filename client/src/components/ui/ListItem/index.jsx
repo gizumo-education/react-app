@@ -8,7 +8,6 @@ import styles from './index.module.css'
 export const ListItem = memo(({todo, onEditButtonClick, onDeleteButtonClick, onToggleButtonClick}) => {
     return (
         <li className={styles['list-item']}>
-            {/* ToDoの完了・未完了の切り替えボタンの表示 */}
             {todo.isCompleted ? (
                 <Button
                     buttonStyle='icon-only'
@@ -26,11 +25,11 @@ export const ListItem = memo(({todo, onEditButtonClick, onDeleteButtonClick, onT
                     <Icon
                         iconName='circle'
                         size='medium'
-                        className={styles['circle-icon']} // タスクに付く「◯（丸アイコン）」を表示する
+                        className={styles['circle-icon']}
                     />
                 </Button>
             )}
-            {/* ↓1つのタスク（タイトル・説明文）を囲うコンテナ */}
+
             <div className={styles.task}>
                 <div
                     className={`${styles.title} ${

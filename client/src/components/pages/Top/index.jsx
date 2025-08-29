@@ -20,6 +20,7 @@ export const Top = () => {
     title: '',
     description: '',
   })
+
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
   const handleAddTaskButtonClick = useCallback(() => {
@@ -42,13 +43,8 @@ export const Top = () => {
     (event) => {
       event.preventDefault()
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-        // 1 追加したtodoを一覧に表示
         setTodos((prevTodos) => [...prevTodos, data])
-
-        // 2 フォームを非表示
         setIsAddTaskFormOpen(false)
-
-        // 3 入力欄を空にする
         setInputValues({ title: '', description: ''})
       })
       .catch((error) => {
@@ -64,14 +60,12 @@ export const Top = () => {
       axios
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({data}) => {
-          // 1 更新されたtodoを一覧に表示
           setTodos((prevTodos) =>
             prevTodos.map((todo) =>
               todo.id === editTodoId ? data : todo
             )
           )
 
-          // 2 編集フォームを非表示
           setEditTodoId('')
         })
 
@@ -106,8 +100,7 @@ export const Top = () => {
 
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`).then(({data}) => {
-      // stateから該当todoを除外、反映
-      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id)) // このtodoのidが、削除対象のidと違う場合
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id))
     })
     .catch((error) => {
       switch (error.statusCode) {
@@ -122,7 +115,6 @@ export const Top = () => {
       }
     })
   }, [])
-  // prevState が「直前の todos 配列」
 
   const handleToggleButtonClick = useCallback((id) => {
     axios.patch(`http://localhost:3000/todo/${id}/completion-status`, {
@@ -152,7 +144,6 @@ export const Top = () => {
 
     useEffect(() => {
       axios.get('http://localhost:3000/todo').then(({data}) => {
-        // console.log(data)
         setTodos(data)
       })
       .catch((error) => {
