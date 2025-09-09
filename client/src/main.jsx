@@ -5,10 +5,12 @@ import 'react-toastify/dist/ReactToastify.css'
 import { router } from './routes'
 import './styles/reset.css'
 import './styles/globals.css'
+import 'react-toastify/dist/ReactToastify.css'
+import { RecoilRoot } from 'recoil'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <>
+  <RecoilRoot>
     <ToastContainer />
     <RouterProvider router={router} />
-  </>
+  </RecoilRoot>
 )

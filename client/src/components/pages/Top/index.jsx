@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react' // useStateを追加
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { axios } from '../../../utils/axiosConfig'
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem' // 一覧表示追加
@@ -12,14 +14,15 @@ import { errorToast } from '../../../utils/errorToast'//エラーハンドリン
 import styles from './index.module.css'
 
 export const Top = () => {
-  const [todos, setTodos] = useState([])//todo一覧を管理している
-  const [editTodoId, setEditTodoId] = useState('')//どのtodoを編集中か
-  const [inputValues, setInputValues] = useState({//入力内容を保持している
+  const todos = useRecoilValue(incompleteTodoListState)
+  const setTodos = useSetRecoilState(todoState)
+  const [inputValues, setInputValues] = useState({
     title: '',
     description: '',
   })
-  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)//フォームが開いているか
 
+  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
+  const [editTodoId, setEditTodoId] = useState('')
 
 
 
@@ -55,7 +58,7 @@ export const Top = () => {
         })
 
     },
-    [inputValues]//入力値が変わるたびに最新の関数に作り直す
+    [setTodos,inputValues]//入力値が変わるたびに最新の関数に作り直す
   )
 
 
@@ -113,7 +116,7 @@ export const Top = () => {
           }
         })
     },
-    [editTodoId, inputValues]
+    [setTodos,editTodoId, inputValues]
   )
 
 
@@ -142,7 +145,7 @@ export const Top = () => {
             break
         }
       })
-  }, [])
+  }, [setTodos])
 
 
 
@@ -179,7 +182,7 @@ export const Top = () => {
           }
         })
     },
-    [todos]
+    [todos, setTodos]
   )
 
 
@@ -206,7 +209,7 @@ export const Top = () => {
       .catch((error) => {
         errorToast(error.message)
       })
-  }, [])
+  }, [setTodos])
 
   //編集中のid(editTodoID)とidが一致したら編集フォーム、それ以外は普通のListItem表示
   return (
