@@ -69,6 +69,7 @@ export const Top = () => {
       axios
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
+          console.log(data)
           const editedTodos = todos.map((todo) => {
             if (editTodoId === todo.id) {
               return {
@@ -85,6 +86,12 @@ export const Top = () => {
     },
     [editTodoId, inputValues]
   )
+
+  const handleDeleteButtonClick = useCallback((id) => {
+    axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
+      setTodos(data)
+    })
+  }, [])
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
@@ -116,6 +123,7 @@ export const Top = () => {
               key={todo.id}
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
+              onDeleteButtonClick={handleDeleteButtonClick}
             />
           )
         })}
