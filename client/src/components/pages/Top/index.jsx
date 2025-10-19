@@ -69,7 +69,6 @@ export const Top = () => {
       axios
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
-          console.log(data)
           const editedTodos = todos.map((todo) => {
             if (editTodoId === todo.id) {
               return {
@@ -92,6 +91,25 @@ export const Top = () => {
       setTodos(data)
     })
   }, [])
+
+  const handleToggleButtonClick = useCallback(
+    (id) => {
+      axios
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+          isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+        })
+        .then(({ data }) => {
+          setTodos((prevTodos) =>
+            prevTodos.map((todo) =>
+              todo.id === data.id
+                ? { ...todo, isCompleted: !todo.isCompleted }
+                : todo
+            )
+          )
+        })
+    },
+    [todos]
+  )
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
@@ -124,6 +142,7 @@ export const Top = () => {
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
               onDeleteButtonClick={handleDeleteButtonClick}
+              onToggleButtonClick={handleToggleButtonClick}
             />
           )
         })}
