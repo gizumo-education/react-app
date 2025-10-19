@@ -69,17 +69,17 @@ export const Top = () => {
       axios
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
-          const editedTodos = todos.map((todo) => {
-            if (editTodoId === todo.id) {
-              return {
-                ...todo,
-                title: data.title,
-                description: data.description,
-              }
-            }
-            return todo
-          })
-          setTodos(editedTodos)
+          setTodos(
+            todos.map((todo) =>
+              editTodoId === todo.id
+                ? {
+                    ...todo,
+                    title: data.title,
+                    description: data.description,
+                  }
+                : todo
+            )
+          )
           setEditTodoId('')
         })
     },
