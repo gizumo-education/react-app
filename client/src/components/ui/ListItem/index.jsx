@@ -35,4 +35,5 @@ ListItem.prototype = {
     description:PropTypes.string,
     isCompleted: PropTypes.bool.isRequired,
   }).isRequired,
+  onEditButtonClick: PropTypes.func.isRequired,
 }
