@@ -32,7 +32,6 @@ export const Top = () => {
         setTodos((oldData) => [...oldData, data])
         handleCancelButtonClick()//グローバル関数
         setInputValues('')
-        // setInputValues({title: '',description: '',})
       })
     },
     [inputValues]
@@ -46,8 +45,9 @@ export const Top = () => {
         .then(({ data }) => {
           console.log(data)
           setTodos((todos) => //更新前の現時点で最新のTodo
-            todos.map((todo) => //↑のうちひとつ
-            todo.id === editTodoId ? data : todo))
+            todos.map((todo) => //↑のうちのリストひとつにおける処理
+            todo.id === editTodoId ? data : todo
+          ))
           setEditTodoId('')
           console.log(todos)
         })
@@ -67,6 +67,16 @@ export const Top = () => {
     }, 
     [todos]
   )
+
+  // 削除機能の関数
+  const handleDeleteButtonClick = useCallback(
+    (id) => {//axios.delete()の関数の呼び出しのみのためevent.preventDefault()は未記載
+    axios.delete(`http://localhost:3000/todo/${id}`)
+    .then(data => {
+      console.log(data)
+      setTodos(data.data)
+    })
+  }, [todos])
 
   // ToDoの追加フォームの表示・非表示の管理
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
@@ -113,6 +123,7 @@ export const Top = () => {
           key={todo.id}
           todo={todo} 
           onEditButtonClick={handleEditButtonClick}
+          onDeleteButtonClick={handleDeleteButtonClick}
           />)
         })}
         {/* ToDoの追加フォームの表示・非表示 */}
