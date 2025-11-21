@@ -49,7 +49,6 @@ export const Top = () => {
             todo.id === editTodoId ? data : todo
           ))
           setEditTodoId('')
-          console.log(todos)
         })
     },
     [editTodoId, inputValues]
@@ -78,6 +77,25 @@ export const Top = () => {
     })
   }, [todos])
 
+  // 切り替え機能の関数
+  const handleToggleButtonClick = useCallback(
+    (id) => {
+      axios
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+          isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+        })
+        .then(({ data }) => {
+          console.log(data)
+          setTodos((todos) =>
+            todos.map((todo) =>
+              todo.id === id ? data : todo
+            )
+          )
+        })
+    },
+    [todos]
+  )
+
   // ToDoの追加フォームの表示・非表示の管理
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
   const handleAddTaskButtonClick = useCallback(() => {
@@ -96,7 +114,6 @@ export const Top = () => {
       setTodos(data)
     })
   }, [])
-  
 
   return (
     <Layout>
@@ -124,6 +141,7 @@ export const Top = () => {
           todo={todo} 
           onEditButtonClick={handleEditButtonClick}
           onDeleteButtonClick={handleDeleteButtonClick}
+          onToggleButtonClick={handleToggleButtonClick}
           />)
         })}
         {/* ToDoの追加フォームの表示・非表示 */}

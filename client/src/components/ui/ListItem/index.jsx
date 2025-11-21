@@ -6,11 +6,36 @@ import { Icon } from '../Icon'
 
 import styles from './index.module.css'
 
-export const ListItem = memo(({ todo , onEditButtonClick , onDeleteButtonClick }) => {
+export const ListItem = memo(({ todo , onEditButtonClick , onDeleteButtonClick , onToggleButtonClick }) => {
   return (
     <li className={styles['list-item']}>
+      {/* 切り替えアイコンを表示 */}
+      {todo.isCompleted ? (
+          <Button
+            buttonStyle='icon-only'
+            className={styles['complete-button']}
+            onClick={() => onToggleButtonClick(todo.id)}
+          >
+            <Icon iconName='check' size='large' color='orange' />
+          </Button>
+        ) : (
+          <Button
+            buttonStyle='icon-only'
+            className={styles['complete-button']}
+            onClick={() => onToggleButtonClick(todo.id)}
+          >
+            <Icon
+              iconName='circle'
+              size='medium'
+              className={styles['circle-icon']}
+            />
+          </Button>
+        )}
+      {/* リストを表示 */}
       <div className={styles.task}>
-        <div className={styles.title}>{todo.title}</div>
+        <div className={`${styles.title} ${todo.isCompleted ? styles['task-completed'] : ''}`}>
+          {todo.title}
+        </div>
         {todo.description && (
           <div className={styles.description}>{todo.description}</div>
         )}
@@ -45,4 +70,5 @@ ListItem.propTypes = {
   }).isRequired,
   onEditButtonClick: PropTypes.func.isRequired, // 編集アイコン
   onDeleteButtonClick: PropTypes.func.isRequired, // 削除アイコン
+  onToggleButtonClick: PropTypes.func.isRequired, // 切り替えアイコン
 }
