@@ -112,7 +112,7 @@ export const Top = () => {
   //削除するTodoのidを受け取る
   const handleDeleteButtonClick = useCallback((id) => {
 
-    // section17 練習問題 
+    // section17 練習問題 削除機能の実施
     //API通信
     axios.delete(`http://localhost:3000/todo/${id}`).then(() => {
       console.log(`http://localhost:3000/todo/${id}`)
@@ -122,6 +122,27 @@ export const Top = () => {
       )
     })
   }, [])
+
+
+  //完了・未完了切り替え機能の実装
+  const handleToggleButtonClick = useCallback(
+    (id) => {
+      axios
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+          isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+        })
+        .then(({ data }) => {
+          console.log(data)
+
+          //section18 練習問題 切り替え実装
+          setTodos(prevTodos => prevTodos.map(todo => 
+            todo.id === id ? {...todo, isCompleted:data.isCompleted} : todo
+          ))
+        })
+
+    },
+    [todos]
+  )
 
 
 
@@ -158,6 +179,7 @@ export const Top = () => {
             key={todo.id} 
             todo={todo} 
             onEditButtonClick={handleEditButtonClick}onDeleteButtonClick={handleDeleteButtonClick}
+            onToggleButtonClick={handleToggleButtonClick}
           />
           )
         })}
