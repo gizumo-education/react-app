@@ -56,11 +56,12 @@ export const Top = () => {
       event.preventDefault()
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
         console.log(data)
-        //postすることでフォームで入力したdataを受け取り、下記の処理を行う
+        //練習問題 postすることでフォームで入力したdataを受け取り、下記の処理を行う
         //展開と追加
         setTodos(prevTodos => [...prevTodos,data])
         //フォームを閉じる
         setIsAddTaskFormOpen(false)
+        //フォームの中身を初期値に戻す
         setInputValues({title: '',
           description: '',
         })
@@ -78,7 +79,7 @@ export const Top = () => {
         .then(({ data }) => {
           console.log(data)
 
-          //練習問題
+          //section16 練習問題
           //最新のデータを取得し、mapメソッドで一つ一つのオブジェクト展開、現在のidと編集中のidが一致していれば情報を更新、一致していなければ現在の情報を表示
           setTodos((prevTodos) => 
             prevTodos.map((todo) => todo.id === editTodoId ?
@@ -106,6 +107,21 @@ export const Top = () => {
     description: targetTodo.description,
   })
   },[todos])
+
+
+  //削除するTodoのidを受け取る
+  const handleDeleteButtonClick = useCallback((id) => {
+
+    // section17 練習問題 
+    //API通信
+    axios.delete(`http://localhost:3000/todo/${id}`).then(() => {
+      console.log(`http://localhost:3000/todo/${id}`)
+      //idが一致しない要素だけで新しい配列作成
+      setTodos(prevTodos =>
+        prevTodos.filter((todo) => todo.id !== id)
+      )
+    })
+  }, [])
 
 
 
@@ -141,7 +157,7 @@ export const Top = () => {
           <ListItem 
             key={todo.id} 
             todo={todo} 
-            onEditButtonClick={handleEditButtonClick}
+            onEditButtonClick={handleEditButtonClick}onDeleteButtonClick={handleDeleteButtonClick}
           />
           )
         })}
