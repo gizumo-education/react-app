@@ -57,7 +57,7 @@ export const Top = () => {
       event.preventDefault()
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
         console.log(data)
-        //練習問題 postすることでフォームで入力したdataを受け取り、下記の処理を行う
+        //section15 練習問題 postすることでフォームで入力したdataを受け取り、下記の処理を行う
         //展開と追加
         setTodos(prevTodos => [...prevTodos,data])
         //フォームを閉じる
@@ -186,10 +186,12 @@ export const Top = () => {
 
 
 
-
+  //ToDo一覧取得
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       console.log(data);
+
+      //section14 練習問題
       //API通信が成功した場合、追加したToDoが一覧に表示
       setTodos(data);
 
