@@ -12,6 +12,9 @@ import styles from './index.module.css'
 
 export const Top = () => {
   const [todos, setTodos] = useState([]) 
+  // 編集するToDoのidを管理
+  const [editTodoId, setEditTodoId] = useState('')
+
   // ToDoの追加フォームに入力された値を保持
   const [inputValues, setInputValues] = useState({
     title: '',
@@ -26,7 +29,7 @@ export const Top = () => {
       event.preventDefault()
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
         console.log(data)
-        setTodos((newData) => [...newData, data])
+        setTodos((oldData) => [...oldData, data])
         handleCancelButtonClick()//グローバル関数
         setInputValues('')
         // setInputValues({title: '',description: '',})
@@ -34,12 +37,46 @@ export const Top = () => {
     },
     [inputValues]
   )
+
+  const handleEditedTodoSubmit = useCallback(
+    (event) => {
+      event.preventDefault()
+      axios
+        .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
+        .then(({ data }) => {
+          console.log(data)
+          setTodos((todos) => //更新前の現時点で最新のTodo
+            todos.map((todo) => //↑のうちひとつ
+            todo.id === editTodoId ? data : todo))
+          setEditTodoId('')
+          console.log(todos)
+        })
+    },
+    [editTodoId, inputValues]
+  )
+
+  const handleEditButtonClick = useCallback(
+    (id) => {
+      setIsAddTaskFormOpen(false)
+      setEditTodoId(id)//一つのリストしか編集ができない状態
+      const targetTodo = todos.find((todo) => todo.id === id)
+      setInputValues({
+        title: targetTodo.title,
+        description: targetTodo.description,
+      })
+    }, 
+    [todos]
+  )
+
   // ToDoの追加フォームの表示・非表示の管理
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
   const handleAddTaskButtonClick = useCallback(() => {
+    setInputValues({ title: '', description: '' })
+    setEditTodoId('') 
     setIsAddTaskFormOpen(true)
   }, [])
   const handleCancelButtonClick = useCallback(() => {
+    setEditTodoId('')
     setIsAddTaskFormOpen(false)
   }, [])
 
@@ -56,8 +93,27 @@ export const Top = () => {
       <h1 className={styles.heading}>ToDo一覧</h1>
       <ul className={styles.list}>
         {/* リストの情報を表示する繰り返し処理 */}
-        {todos.map((data) => {
-          return <ListItem key={data.id} todo={data} />
+        {todos.map((todo) => {
+          // 編集アイコン実行時のidとリストのidが一致するか評価
+          if (editTodoId === todo.id) {
+            return (
+              <li key={todo.id}>
+                <Form
+                  value={inputValues}
+                  editTodoId={editTodoId}
+                  onChange={handleInputChange}
+                  onCancelClick={handleCancelButtonClick}
+                  onSubmit={handleEditedTodoSubmit}
+                />
+              </li>
+              )
+            }
+          return (
+          <ListItem
+          key={todo.id}
+          todo={todo} 
+          onEditButtonClick={handleEditButtonClick}
+          />)
         })}
         {/* ToDoの追加フォームの表示・非表示 */}
         <li>
