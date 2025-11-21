@@ -5,6 +5,7 @@ import { ListItem } from '../../ui/ListItem'
 import { Button } from '../../ui/Button'
 import { Icon } from '../../ui/Icon'
 import { Form } from '../../ui/Form' 
+import { errorToast  } from '../../../utils/errorToast'
 
 
 
@@ -67,6 +68,9 @@ export const Top = () => {
         })
         
       })
+      .catch((error) => {
+        errorToast(error.message)
+      })
     },
     [inputValues, setTodos]
   )
@@ -88,6 +92,18 @@ export const Top = () => {
           //非表示にする
           setEditTodoId('')
         
+        })
+        .catch((error) => {
+          switch(error.statusCode) {
+            case 404:
+              errorToast(
+                '更新するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+              default:
+                errorToast(error.message)
+                break
+          }
         })
     },
     [editTodoId, inputValues]
@@ -121,6 +137,18 @@ export const Top = () => {
         prevTodos.filter((todo) => todo.id !== id)
       )
     })
+    .catch((error) => {
+      switch (error.statusCode) {
+        case 404:
+          errorToast(
+            '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+          )
+          break
+          default:
+          errorToast(error.message)
+          break
+      }
+    })
   }, [])
 
 
@@ -138,6 +166,18 @@ export const Top = () => {
           setTodos(prevTodos => prevTodos.map(todo => 
             todo.id === id ? {...todo, isCompleted:data.isCompleted} : todo
           ))
+        })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+              default:
+                errorToast(error.message)
+                break
+          }
         })
 
     },
