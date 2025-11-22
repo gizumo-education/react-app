@@ -1,6 +1,8 @@
 
 import { useState, useEffect , useCallback } from 'react' 
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { axios } from '../../../utils/axiosConfig'
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem' 
@@ -13,7 +15,8 @@ import { errorToast } from '../../../utils/errorToast'
 import styles from './index.module.css'
 
 export const Top = () => {
-  const [todos, setTodos] = useState([]) 
+  const todos = useRecoilValue(incompleteTodoListState)//selector読み取り専用
+  const setTodos = useSetRecoilState(todoState)//atom書き込み専用
   // 編集するToDoのidを管理
   const [editTodoId, setEditTodoId] = useState('')
 
@@ -40,7 +43,7 @@ export const Top = () => {
       })
   
     },
-    [inputValues]
+    [setTodos, inputValues]
   )
 
   const handleEditedTodoSubmit = useCallback(
@@ -69,7 +72,7 @@ export const Top = () => {
           }
         })
     },
-    [editTodoId, inputValues]
+    [setTodos, editTodoId, inputValues]
   )
 
   const handleEditButtonClick = useCallback(
@@ -105,7 +108,7 @@ export const Top = () => {
           break
       }
     })
-  }, [todos])
+  }, [todos, setTodos])
 
   // 切り替え機能の関数
   const handleToggleButtonClick = useCallback(
@@ -135,7 +138,7 @@ export const Top = () => {
           }
         })
     },
-    [todos])
+    [todos, setTodos])
 
   // ToDoの追加フォームの表示・非表示の管理
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
@@ -157,7 +160,7 @@ export const Top = () => {
     .catch((error) => {
       errorToast(error.message)
     })
-  }, [])
+  }, [setTodos])
 
   return (
     <Layout>

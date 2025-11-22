@@ -42,20 +42,23 @@ export const ListItem = memo(({ todo , onEditButtonClick , onDeleteButtonClick ,
       </div>
       {/* 編集アイコンを表示 */}
       <div className={styles['task-action']}>
-      <Button
-        buttonStyle='icon-only'
-        onClick={() => onEditButtonClick(todo.id)}
-      >
-        <Icon iconName='edit' color='indigo-blue' size='medium' />
-      </Button>      
-    </div>
-      {/* 削除アイコンを表示 */}
-      <Button
-          buttonStyle='icon-only'
-          onClick={() => onDeleteButtonClick(todo.id)}
-        >
-          <Icon iconName='trash' color='indigo-blue' size='medium' />
-        </Button>
+      {!todo.isCompleted && (
+          <>
+            <Button
+              buttonStyle='icon-only'
+              onClick={() => onEditButtonClick(todo.id)}
+            >
+              <Icon iconName='edit' color='indigo-blue' size='medium' />
+            </Button>
+            <Button
+              buttonStyle='icon-only'
+              onClick={() => onDeleteButtonClick(todo.id)}
+            >
+              <Icon iconName='trash' color='indigo-blue' size='medium' />
+            </Button>
+          </>
+        )}   
+        </div>
     </li>
   )
 })
@@ -68,7 +71,11 @@ ListItem.propTypes = {
     description: PropTypes.string,
     isCompleted: PropTypes.bool.isRequired,
   }).isRequired,
-  onEditButtonClick: PropTypes.func.isRequired, // 編集アイコン
-  onDeleteButtonClick: PropTypes.func.isRequired, // 削除アイコン
+  onEditButtonClick: PropTypes.func, // 編集アイコン
+  onDeleteButtonClick: PropTypes.func, // 削除アイコン
   onToggleButtonClick: PropTypes.func.isRequired, // 切り替えアイコン
+}
+ListItem.defaultProps = {
+  onEditButtonClick: () => {},
+  onDeleteButtonClick: () => {},
 }
