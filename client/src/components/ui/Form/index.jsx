@@ -14,6 +14,7 @@ export const Form = memo(({ value, editTodoId, onChange, onCancelClick, onSubmit
           placeholder='タスク名'
           autoFocus
           value={value.title}
+          //入力の値を変更したら発火
           onChange={onChange}
           className={styles['input-title']}
         />
@@ -34,6 +35,7 @@ export const Form = memo(({ value, editTodoId, onChange, onCancelClick, onSubmit
           キャンセル
         </Button>
         <Button
+        //ボタンの種類 送信 
           type='submit'
           disabled={!value.title}
           className={styles['submit-button']}

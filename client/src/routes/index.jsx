@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom' //ルーティング設定
 
 import { Top } from '../components/pages/Top'
 import { Completed } from '../components/pages/Completed'

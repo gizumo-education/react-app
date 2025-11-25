@@ -1,6 +1,8 @@
 import { Layout } from '../../ui/Layout'
 import { useState, useEffect, useCallback } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { axios } from '../../../utils/axiosConfig'
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 import { ListItem } from '../../ui/ListItem'
 import { Button } from '../../ui/Button'
 import { Icon } from '../../ui/Icon'
@@ -12,7 +14,12 @@ import { errorToast  } from '../../../utils/errorToast'
 import styles from './index.module.css'
 
 export const Top = () => {
-  const [todos, setTodos] = useState([])
+  //ToDoの未完了一覧を管理
+  const todos = useRecoilValue(incompleteTodoListState)
+  const setTodos = useSetRecoilState(todoState)
+
+  //編集フォーム
+  //編集するidが格納
   const [editTodoId, setEditTodoId] = useState('')
   
   console.log(todos);
@@ -53,8 +60,10 @@ export const Top = () => {
 
   //fromタグのデフォルトイベント（ページ遷移）をキャンセルする関数
   const handleCreateTodoSubmit = useCallback(
+    //eventオブジェクト
     (event) => {
       event.preventDefault()
+      //非同期処理 リロードなし
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
         console.log(data)
         //section15 練習問題 postすることでフォームで入力したdataを受け取り、下記の処理を行う
@@ -72,7 +81,7 @@ export const Top = () => {
         errorToast(error.message)
       })
     },
-    [inputValues, setTodos]
+    [inputValues, setTodos, editTodoId]
   )
 
   const handleEditedTodoSubmit = useCallback(
@@ -149,7 +158,7 @@ export const Top = () => {
           break
       }
     })
-  }, [])
+  }, [setTodos])
 
 
   //完了・未完了切り替え機能の実装
@@ -181,7 +190,7 @@ export const Top = () => {
         })
 
     },
-    [todos]
+    [todos, setTodos]
   )
 
 
@@ -196,7 +205,7 @@ export const Top = () => {
       setTodos(data);
 
     })
-  }, [])
+  }, [setTodos])
 
   return (
     <Layout>

@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { NavLink } from 'react-router-dom' 
+import { NavLink } from 'react-router-dom'  //クリック時にページ遷移
 
 import { Icon } from '../Icon' 
 import styles from './index.module.css'

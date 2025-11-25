@@ -46,20 +46,24 @@ export const ListItem = memo (({ todo,  onEditButtonClick, onDeleteButtonClick, 
           </div>
         )}
       </div>
+        {/*  完了済みの場合は編集と削除を非表示 */}
       <div className={styles['task-action']}>
-      <Button
-        buttonStyle='icon-only'
-        onClick={() => onEditButtonClick(todo.id)}
-      >
-        <Icon iconName='edit' color='indigo-blue' size='medium' />
-      </Button>
-      <Button
-          buttonStyle='icon-only'
-          //onClickすると、関数が実行されidが渡される
-          onClick={() => onDeleteButtonClick(todo.id)}
-        >
-          <Icon iconName='trash' color='indigo-blue' size='medium' />
-        </Button>
+      {!todo.isCompleted && (
+          <>
+            <Button
+              buttonStyle='icon-only'
+              onClick={() => onEditButtonClick(todo.id)}
+            >
+              <Icon iconName='edit' color='indigo-blue' size='medium' />
+            </Button>
+            <Button
+              buttonStyle='icon-only'
+              onClick={() => onDeleteButtonClick(todo.id)}
+            >
+              <Icon iconName='trash' color='indigo-blue' size='medium' />
+            </Button>
+          </>
+        )}
     </div>
     </li>
   )
@@ -73,7 +77,12 @@ ListItem.prototype = {
     description:PropTypes.string,
     isCompleted: PropTypes.bool.isRequired,
   }).isRequired,
-  onEditButtonClick: PropTypes.func.isRequired,
-  onDeleteButtonClick: PropTypes.func.isRequired,
+  onEditButtonClick: PropTypes.func,
+  onDeleteButtonClick: PropTypes.func,
   onToggleButtonClick: PropTypes.func.isRequired,
+}
+
+ListItem.defaultProps = {
+  onEditButtonClick: () => {},
+  onDeleteButtonClick: () => {},
 }
