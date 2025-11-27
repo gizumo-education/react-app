@@ -14,9 +14,11 @@ import { errorToast  } from '../../../utils/errorToast'
 import styles from './index.module.css'
 
 export const Top = () => {
-  //ToDoの未完了一覧を管理
+  //ToDoを管理
   const todos = useRecoilValue(incompleteTodoListState)
   const setTodos = useSetRecoilState(todoState)
+
+
 
   //編集フォーム
   //編集するidが格納

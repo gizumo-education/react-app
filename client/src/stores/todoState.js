@@ -4,7 +4,8 @@ import { atom, selector } from 'recoil'
 export const todoState = atom({
   key: 'todoState',
   default: [],
-})
+}
+)
 
 
 //完了済みToDo一覧を返す
@@ -12,8 +13,8 @@ export const todoState = atom({
 export const completedTodoListState = selector({
   key: 'completedTodoListState',
   get: ({ get }) => {
-    const completeTodo = get(todoState)
-    return completeTodo.filter(todo => todo.isCompleted)
+    // const completeTodo = 
+    return get(todoState).filter(todo => todo.isCompleted)
   },
 })
 
@@ -22,7 +23,7 @@ export const completedTodoListState = selector({
 export const incompleteTodoListState = selector({
   key: 'incompleteTodoListState',
   get: ({ get }) => {
-    const todos = get(todoState)
-    return todos.filter(todo => !todo.isCompleted)
+    // const todos = 
+    return get(todoState).filter(todo => !todo.isCompleted)
   },
 })
