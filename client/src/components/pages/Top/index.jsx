@@ -37,10 +37,21 @@ export const Top = () => {
   const handleCreateTodoSubmit = useCallback(
   (event) => {
     event.preventDefault()
-    axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
+    axios.post('http://localhost:3000/xxxx', inputValues).then(({ data }) => {
       setTodos((prev) => [...prev, data])
       setIsAddTaskFormOpen(false)
       setInputValues('')
+    }).catch((error) => {
+      switch (error.statusCode) {
+        case 404:
+          errorToast(
+            '追加するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+          )
+          break
+        default:
+          errorToast(error.message)
+          break
+      }
     })
   },
   [inputValues]
