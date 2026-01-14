@@ -5,7 +5,7 @@ import { Button } from '../Button'
 import styles from './index.module.css'
 
 
-export const Form = memo(({value, editTodoId,onChange, onCancelClick, onSubmit}) => {
+export const Form = memo(({value, editTodoId, onChange, onCancelClick, onSubmit}) => {
   return (
     <div>
       <form onSubmit={onSubmit} className={styles.form}>
