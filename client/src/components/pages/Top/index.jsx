@@ -37,7 +37,7 @@ export const Top = () => {
   const handleCreateTodoSubmit = useCallback(
   (event) => {
     event.preventDefault()
-    axios.post('http://localhost:3000/xxxx', inputValues).then(({ data }) => {
+    axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
       setTodos((prev) => [...prev, data])
       setIsAddTaskFormOpen(false)
       setInputValues('')
@@ -66,7 +66,7 @@ export const Top = () => {
           console.log(data)
           setTodos((prev) =>
             prev.map((todo) =>
-              todo.id === editTodoId ? { ...todo, ...inputValues } : todo
+              data.id === editTodoId ? { ...todo, ...inputValues } : todo
             )
           )
           setEditTodoId(false)
@@ -129,7 +129,7 @@ export const Top = () => {
           console.log(data)
           setTodos((prev) =>
             prev.map((todo) =>
-              todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
+              data.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
             )
           )
         })
