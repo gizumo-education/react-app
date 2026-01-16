@@ -11,12 +11,17 @@ import styles from './index.module.css'
 
 export const Top = () => {
   // State管理
+  // ToDoリストを保持
   const [todos, setTodos] = useState([])
+  // 編集ボタンがクリックされた時に編集するToDoのidを格納
+  const [editTodoId, setEditTodoId] = useState('')
+  // 追加時のToDoを保持
   const [inputValues, setInputValues] = useState({
     title: '',
     description: '',
-  }) // 追加時のToDoを保持
-  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false) // 追加フォームの表示・非表示を管理
+  })
+  // 追加フォームの表示・非表示を管理
+  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
   // ToDo一覧表示機能
   useEffect(() => {
@@ -28,12 +33,15 @@ export const Top = () => {
   // ToDo追加フォームの表示機能
   const handleAddTaskButtonClick = useCallback(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
+      setInputValues({ title: '', description: '' })
+      setEditTodoId('')
       setIsAddTaskFormOpen(true)
     })
   }, [])
 
   // ToDo追加フォームの非表示機能
   const handleCancelButtonClick = useCallback(() => {
+    setEditTodoId('')
     setIsAddTaskFormOpen(false)
     setInputValues({ title: '', description: '' })
   }, [])
@@ -55,12 +63,58 @@ export const Top = () => {
     [inputValues]
   )
 
+  // 編集するToDoのidを格納する処理
+  const handleEditButtonClick = useCallback((id) => {
+    setIsAddTaskFormOpen(false)
+    setEditTodoId(id)
+    // 編集フォームにToDoが表示される処理
+    const targetTodo = todos.find((todo) => todo.id === id)
+    setInputValues({
+      title: targetTodo.title,
+      description: targetTodo.description,
+    })
+  }, [todos])
+
+  // ToDo編集機能
+  const handleEditedTodoSubmit = useCallback(
+    (event) => {
+      event.preventDefault()
+      axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
+        .then(({ data }) => {
+          todos.map((todo) => {
+            setTodos(...todo, data)
+          })
+        })
+      setEditTodoId(false)
+    },
+    [editTodoId, inputValues]
+  )
+
   return (
     <Layout>
       <h1 className={styles.heading}>ToDo一覧</h1>
       <ul className={styles.list}>
         {todos.map((todo) => {
-          return <ListItem key={todo.id} todo={todo} />
+          if (editTodoId === todo.id) {
+            return (
+              <li key={todo.id}>
+                <Form
+                  value={inputValues}
+                  editTodoId={editTodoId}
+                  onChange={handleInputChange}
+                  onCancelClick={handleCancelButtonClick}
+                  onSubmit={handleEditedTodoSubmit}
+                />
+              </li>
+            )
+          }
+          return (
+            <ListItem
+              key={todo.id}
+              todo={todo}
+              onEditButtonClick={handleEditButtonClick}
+            />
+          )
         })}
         <li>
           {isAddTaskFormOpen ? (
