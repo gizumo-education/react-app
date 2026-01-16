@@ -90,6 +90,14 @@ export const Top = () => {
     [editTodoId, inputValues]
   )
 
+  // 削除機能
+  const handleDeleteButtonClick = useCallback((id) => {
+    axios.delete(`http://localhost:3000/todo/${id}`)
+      .then(({ data }) => {
+        setTodos(data)
+      })
+  }, [])
+
   return (
     <Layout>
       <h1 className={styles.heading}>ToDo一覧</h1>
@@ -113,6 +121,7 @@ export const Top = () => {
               key={todo.id}
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
+              onDeleteButtonClick={handleDeleteButtonClick}
             />
           )
         })}
