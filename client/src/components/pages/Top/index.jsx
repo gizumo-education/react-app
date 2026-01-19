@@ -87,7 +87,7 @@ export const Top = () => {
     [editTodoId, inputValues]
   )
 
-  const handleEditButtonClick = useCallback(
+  const handleEditButtonClick = useCallback( 
     (id) => {
       setIsAddTaskFormOpen(false)
       setEditTodoId(id)
