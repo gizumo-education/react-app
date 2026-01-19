@@ -7,6 +7,8 @@ import { Button } from '../../ui/Button'
 import { Icon } from '../../ui/Icon'
 import { Form } from '../../ui/Form'
 
+import { errorToast } from '../../../utils/errorToast'
+
 import styles from './index.module.css'
 
 export const Top = () => {
@@ -28,6 +30,9 @@ export const Top = () => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       setTodos(data)
     })
+      .catch((error) => {
+        errorToast(error.message)
+      })
   }, [todos])
 
   // ToDo追加フォームの表示機能
@@ -56,9 +61,13 @@ export const Top = () => {
   const handleCreateTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
-      axios.post('http://localhost:3000/todo', inputValues).then(() => {
+      axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
         setInputValues({ title: '', description: '' })
+        setIsAddTaskFormOpen(false)
       })
+        .catch((error) => {
+          errorToast(error.message)
+        })
     },
     [inputValues]
   )
@@ -85,6 +94,15 @@ export const Top = () => {
             setTodos(...todo, data)
           })
         })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '更新するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+          }
+        })
       setEditTodoId(false)
     },
     [editTodoId, inputValues]
@@ -96,6 +114,18 @@ export const Top = () => {
       .then(({ data }) => {
         setTodos(data)
       })
+      .catch((error) => {
+        switch (error.statusCode) {
+          case 404:
+            errorToast(
+              '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+            )
+            break
+          default:
+            errorToast(error.message)
+            break
+        }
+      })
   }, [])
 
   // ToDo完了・未完了を切り替える処理
@@ -106,9 +136,23 @@ export const Top = () => {
           isCompleted: todos.find((todo) => todo.id === id).isCompleted,
         })
         .then(({ data }) => {
-          todos.map((todo) => {
-            setTodos(...todo, data)
-          })
+          setTodos((prevTodos) =>
+            prevTodos.map((todo) =>
+              todo.id === data.id ? data : todo
+            )
+          )
+        })
+        .catch((error) => {
+          switch (error.response?.status) {
+            case 404:
+              errorToast(
+                '完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+            default:
+              errorToast(error.message)
+              break
+          }
         })
     },
     [todos]
