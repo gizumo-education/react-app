@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { axios } from '../../../utils/axiosConfig'
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem'
@@ -14,7 +16,8 @@ import styles from './index.module.css'
 export const Top = () => {
   // State管理
   // ToDoリストを保持
-  const [todos, setTodos] = useState([])
+  const todos = useRecoilValue(incompleteTodoListState)
+  const setTodos = useSetRecoilState(todoState)
   // 編集ボタンがクリックされた時に編集するToDoのidを格納
   const [editTodoId, setEditTodoId] = useState('')
   // 追加時のToDoを保持
@@ -33,7 +36,7 @@ export const Top = () => {
       .catch((error) => {
         errorToast(error.message)
       })
-  }, [todos])
+  }, [setTodos])
 
   // ToDo追加フォームの表示機能
   const handleAddTaskButtonClick = useCallback(() => {
@@ -69,7 +72,7 @@ export const Top = () => {
           errorToast(error.message)
         })
     },
-    [inputValues]
+    [setTodos, inputValues]
   )
 
   // 編集するToDoのidを格納する処理
@@ -105,7 +108,7 @@ export const Top = () => {
         })
       setEditTodoId(false)
     },
-    [editTodoId, inputValues]
+    [setTodos, editTodoId, inputValues]
   )
 
   // 削除機能
@@ -126,7 +129,8 @@ export const Top = () => {
             break
         }
       })
-  }, [])
+  },
+    [setTodos])
 
   // ToDo完了・未完了を切り替える処理
   const handleToggleButtonClick = useCallback(
@@ -155,7 +159,7 @@ export const Top = () => {
           }
         })
     },
-    [todos]
+    [todos, setTodos]
   )
 
   return (
