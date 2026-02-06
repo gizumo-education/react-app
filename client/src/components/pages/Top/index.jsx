@@ -67,6 +67,7 @@ export const Top = () => {
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
         setInputValues({ title: '', description: '' })
         setIsAddTaskFormOpen(false)
+        setTodos([...todos, data])
       })
         .catch((error) => {
           errorToast(error.message)
