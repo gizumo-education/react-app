@@ -94,9 +94,11 @@ export const Top = () => {
       event.preventDefault()
       axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
-          todos.map((todo) => {
-            setTodos(...todo, data)
-          })
+          setTodos((prev) => (
+            prev.map((element) => element.id === editTodoId ? data : element)
+          ))
+          setEditTodoId(false)
+          setIsAddTaskFormOpen(false)
         })
         .catch((error) => {
           switch (error.statusCode) {
@@ -104,6 +106,9 @@ export const Top = () => {
               errorToast(
                 '更新するToDoが見つかりませんでした。画面を更新して再度お試しください。'
               )
+              break
+            default:
+              errorToast(error.message)
               break
           }
         })
@@ -141,7 +146,7 @@ export const Top = () => {
           isCompleted: todos.find((todo) => todo.id === id).isCompleted,
         })
         .then(({ data }) => {
-          setTodos((prevTodos) =>
+          setTodos((prevTodos) =>            
             prevTodos.map((todo) =>
               todo.id === data.id ? data : todo
             )
