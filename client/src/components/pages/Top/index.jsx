@@ -36,15 +36,13 @@ export const Top = () => {
       .catch((error) => {
         errorToast(error.message)
       })
-  }, [setTodos])
+  }, [todos])
 
   // ToDo追加フォームの表示機能
   const handleAddTaskButtonClick = useCallback(() => {
-    axios.get('http://localhost:3000/todo').then(() => {
-      setInputValues({ title: '', description: '' })
-      setEditTodoId('')
-      setIsAddTaskFormOpen(true)
-    })
+    setInputValues({ title: '', description: '' })
+    setEditTodoId('')
+    setIsAddTaskFormOpen(true)
   }, [])
 
   // ToDo追加フォームの非表示機能
@@ -73,7 +71,7 @@ export const Top = () => {
           errorToast(error.message)
         })
     },
-    [setTodos, inputValues]
+    [inputValues]
   )
 
   // 編集するToDoのidを格納する処理
@@ -112,7 +110,7 @@ export const Top = () => {
         })
       setEditTodoId(false)
     },
-    [setTodos, editTodoId, inputValues]
+    [inputValues]
   )
 
   // 削除機能
@@ -134,7 +132,7 @@ export const Top = () => {
         }
       })
   },
-    [setTodos])
+    [])
 
   // ToDo完了・未完了を切り替える処理
   const handleToggleButtonClick = useCallback(
@@ -144,7 +142,7 @@ export const Top = () => {
           isCompleted: todos.find((todo) => todo.id === id).isCompleted,
         })
         .then(({ data }) => {
-          setTodos((prevTodos) =>            
+          setTodos((prevTodos) =>
             prevTodos.map((todo) =>
               todo.id === data.id ? data : todo
             )
@@ -163,7 +161,7 @@ export const Top = () => {
           }
         })
     },
-    [todos, setTodos]
+    [todos]
   )
 
   return (
