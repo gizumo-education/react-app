@@ -40,7 +40,7 @@ export const Top = () => {
 
   // ToDo追加フォームの表示機能
   const handleAddTaskButtonClick = useCallback(() => {
-    axios.get('http://localhost:3000/todo').then(({ data }) => {
+    axios.get('http://localhost:3000/todo').then(() => {
       setInputValues({ title: '', description: '' })
       setEditTodoId('')
       setIsAddTaskFormOpen(true)
@@ -97,8 +97,6 @@ export const Top = () => {
           setTodos((prev) => (
             prev.map((element) => element.id === editTodoId ? data : element)
           ))
-          setEditTodoId(false)
-          setIsAddTaskFormOpen(false)
         })
         .catch((error) => {
           switch (error.statusCode) {
