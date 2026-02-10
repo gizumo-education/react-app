@@ -77,6 +77,13 @@ export const Top = () => {
     })
   }, [todos])
 
+  const handleDeleteButtonClick = useCallback((id) => {
+    axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
+      console.log(data)
+      setTodos(data)
+    })
+  }, [])
+
   // 以下のuseEffectの処理を追加
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
@@ -106,6 +113,7 @@ export const Top = () => {
               key={todo.id}
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
+              onDeleteButtonClick={handleDeleteButtonClick}
             />
           )
         })}
