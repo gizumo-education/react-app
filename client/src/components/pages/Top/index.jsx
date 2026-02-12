@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
+
 import { axios } from '../../../utils/axiosConfig'
+import { errorToast } from '../../../utils/errorToast'
 
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem'
@@ -44,6 +46,9 @@ export const Top = () => {
           setInputValues({ title: '', description: '' })
           setTodos([...todos, data])
         })
+        .catch((error) => {
+          errorToast(error.message)
+        })
     },
     [inputValues]
   )
@@ -59,7 +64,18 @@ export const Top = () => {
           )
           setEditTodoId('')
         })
-
+        .catch((e) => {
+          switch (e.statusCode) {
+            case 404:
+              errorToast(
+                '更新するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+            default: 
+              errorToast(e.message)
+              break
+          }
+        })
     },
     [editTodoId, inputValues]
   )
@@ -79,6 +95,18 @@ export const Top = () => {
     axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
       setTodos(data)
     })
+    .catch((e) => {
+      switch (e.statusCode) {
+        case 404:
+          errorToast(
+            '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+          )
+          break
+        default:
+          errorToast(e.message)
+          break
+      }
+    })
   }, [])
 
   const handleToggleButtonClick = useCallback(
@@ -95,6 +123,18 @@ export const Top = () => {
           )
         )
       })
+      .catch((e) => {
+        switch (e.statusCode) {
+          case 404:
+            errorToast(
+              '完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。'
+            )
+            break
+          default:
+            errorToast(e.message)
+            break
+        }
+      })
   },
   [todos]
 )
@@ -103,6 +143,9 @@ export const Top = () => {
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       setTodos(data)
+    })
+    .catch((e) => {
+      errorToast(e.message)
     })
   }, [])
 
