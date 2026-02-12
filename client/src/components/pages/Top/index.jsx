@@ -50,7 +50,7 @@ export const Top = () => {
           errorToast(error.message)
         })
     },
-    [inputValues]
+    [inputValues, todos]
   )
 
   const handleEditedTodoSubmit = useCallback(
