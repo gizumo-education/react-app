@@ -159,6 +159,7 @@ export const Top = () => {
               <li key={todo.id}>
                 <Form
                   value={inputValues}
+                  editTodoId={editTodoId}
                   onChange={handleInputChange}
                   onCancelClick={handleCancelButtonClick}
                   onSubmit={handleEditedTodoSubmit}
