@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react'
 
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { axios } from '../../../utils/axiosConfig'
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 import { errorToast } from '../../../utils/errorToast'
 
 import { Layout } from '../../ui/Layout'
@@ -12,7 +14,8 @@ import { Form } from '../../ui/Form'
 import styles from './index.module.css'
 
 export const Top = () => {
-  const [todos, setTodos] = useState([])
+  const todos = useRecoilValue(incompleteTodoListState)
+  const setTodos = useSetRecoilState(todoState)
   const [editTodoId, setEditTodoId] = useState('')
   const [inputValues, setInputValues] = useState({
     title: '',
@@ -50,7 +53,7 @@ export const Top = () => {
           errorToast(error.message)
         })
     },
-    [inputValues, todos]
+    [todos, setTodos, inputValues]
   )
 
   const handleEditedTodoSubmit = useCallback(
@@ -79,7 +82,7 @@ export const Top = () => {
           }
         })
     },
-    [editTodoId, inputValues]
+    [setTodos, editTodoId, inputValues]
   )
 
   const handleEditButtonClick = useCallback(
@@ -114,7 +117,7 @@ export const Top = () => {
             break
         }
       })
-  }, [])
+  }, [setTodos])
 
   const handleToggleButtonClick = useCallback(
     (id) => {
@@ -142,7 +145,7 @@ export const Top = () => {
           }
         })
     },
-    [todos]
+    [todos, setTodos]
   )
 
   // 以下のuseEffectの処理を追加
@@ -150,12 +153,12 @@ export const Top = () => {
     axios
       .get('http://localhost:3000/todo')
       .then(({ data }) => {
-        setTodos(data)
+        setTodos(data.filter((todo) => !todo.isCompleted))
       })
       .catch((e) => {
         errorToast(e.message)
       })
-  }, [])
+  }, [setTodos])
 
   return (
     <Layout>

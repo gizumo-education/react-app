@@ -48,7 +48,8 @@ export const ListItem = memo(
             </div>
           )}
         </div>
-        <div className={styles['task-action']}>
+        {!todo.isCompleted && (
+          <div className={styles['task-action']}>
           <Button
             buttonStyle='icon-only'
             onClick={() => onEditButtonClick(todo.id)}
@@ -62,6 +63,7 @@ export const ListItem = memo(
             <Icon iconName='trash' color='indigo-blue' size='medium' />
           </Button>
         </div>
+        )}
       </li>
     )
   }
@@ -75,7 +77,11 @@ ListItem.propTypes = {
     description: PropTypes.string,
     isCompleted: PropTypes.bool.isRequired,
   }).isRequired,
-  onEditButtonClick: PropTypes.func.isRequired,
-  onDeleteButtonClick: PropTypes.func.isRequired,
+  onEditButtonClick: PropTypes.func,
+  onDeleteButtonClick: PropTypes.func,
   onToggleButtonClick: PropTypes.func.isRequired,
+}
+ListItem.defaultProps = {
+  onEditButtonClick: () => {},
+  onDeleteButtonClick: () => {},
 }
