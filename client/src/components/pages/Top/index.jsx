@@ -23,20 +23,21 @@ export const Top = () => {
   })
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
+  const handleInputChange = useCallback((event) => {
+    const { name, value } = event.target // name: formのname, value: formの入力値
+    setInputValues((prev) => ({ ...prev, [name]: value }))
+  }, [])
+
   const handleAddTaskButtonClick = useCallback(() => {
     setInputValues({ title: '', description: '' })
     setEditTodoId('')
     setIsAddTaskFormOpen(true)
   }, [])
+
   const handleCancelButtonClick = useCallback(() => {
     setEditTodoId('')
     setIsAddTaskFormOpen(false)
     setInputValues({ title: '', description: '' })
-  }, [])
-
-  const handleInputChange = useCallback((event) => {
-    const { name, value } = event.target
-    setInputValues((prev) => ({ ...prev, [name]: value }))
   }, [])
 
   const handleCreateTodoSubmit = useCallback(
@@ -54,6 +55,20 @@ export const Top = () => {
         })
     },
     [todos, setTodos, inputValues]
+  )
+
+  const handleEditButtonClick = useCallback(
+    (id) => {
+      setIsAddTaskFormOpen(false)
+      setEditTodoId(id)
+
+      const targetTodo = todos.find((todo) => todo.id === id)
+      setInputValues({
+        title: targetTodo.title,
+        description: targetTodo.description,
+      })
+    },
+    [todos]
   )
 
   const handleEditedTodoSubmit = useCallback(
@@ -83,20 +98,6 @@ export const Top = () => {
         })
     },
     [setTodos, editTodoId, inputValues]
-  )
-
-  const handleEditButtonClick = useCallback(
-    (id) => {
-      setIsAddTaskFormOpen(false)
-      setEditTodoId(id)
-
-      const targetTodo = todos.find((todo) => todo.id === id)
-      setInputValues({
-        title: targetTodo.title,
-        description: targetTodo.description,
-      })
-    },
-    [todos]
   )
 
   const handleDeleteButtonClick = useCallback((id) => {
