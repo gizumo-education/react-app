@@ -36,7 +36,7 @@ export const Top = () => {
       .catch((error) => {
         errorToast(error.message)
       })
-  }, [todos])
+  }, [setTodos])
 
   // ToDo追加フォームの表示機能
   const handleAddTaskButtonClick = useCallback(() => {
