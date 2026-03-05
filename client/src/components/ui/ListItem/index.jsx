@@ -74,5 +74,5 @@ ListItem.propTypes = {
     isCompleted: PropTypes.bool.isRequired,
   }).isRequired,
   onEditButtonClick: PropTypes.func.isRequired,
-  inDeleteButtonClick: PropTypes.func.isRequired,
+  onDeleteButtonClick: PropTypes.func.isRequired,
 }
