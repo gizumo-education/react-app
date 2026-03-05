@@ -71,7 +71,7 @@ export const Top = () => {
           errorToast(error.message)
         })
     },
-    [inputValues]
+    [todos, setTodos, inputValues]
   )
 
   // 編集するToDoのidを格納する処理
@@ -110,7 +110,7 @@ export const Top = () => {
         })
       setEditTodoId(false)
     },
-    [inputValues]
+    [setTodos, editTodoId, inputValues]
   )
 
   // 削除機能
@@ -132,7 +132,7 @@ export const Top = () => {
         }
       })
   },
-    [])
+    [setTodos])
 
   // ToDo完了・未完了を切り替える処理
   const handleToggleButtonClick = useCallback(
@@ -161,7 +161,7 @@ export const Top = () => {
           }
         })
     },
-    [todos]
+    [todos, setTodos]
   )
 
   return (
