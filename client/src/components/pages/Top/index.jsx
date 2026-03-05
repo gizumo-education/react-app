@@ -88,7 +88,7 @@ export const Top = () => {
   )
 
   const handleDeleteButtonClick = useCallback((id) => {
-    axios.delete(`http://localhost:3000/todo/${id}`)
+    axios.delete(`http://localhost:3000/todo/${id}`)  //Section17で追加
     .then((response) => {
       console.log(response)
 
@@ -97,6 +97,29 @@ export const Top = () => {
       )
     })
   }, [todos])
+
+  const handleToggleButtonClick = useCallback(
+    (id) => {
+      axios
+      .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+        isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+      })
+      .then(({ data }) => {
+        console.log(data)
+
+        setTodos(                   //Section18で追加
+          todos.map((todo) => {
+            if (todo.id === id) {
+              return data
+            }
+            return todo
+          })
+        )
+
+      })
+    },
+    [todos]
+  )
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
@@ -129,6 +152,7 @@ export const Top = () => {
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
               onDeleteButtonClick={handleDeleteButtonClick}
+              onToggleButtonClick={handleToggleButtonClick}
             />
           )
         })}
