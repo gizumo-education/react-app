@@ -60,14 +60,14 @@ export const Top = () => {
           console.log(data)
 
           setTodos(               //Section16　問題1で追加
-          todos.map((todo) => {
-    if (todo.id === editTodoId) {
-      return data
-    }
-    return todo
-  })
-        )
-        setEditTodoId('')         //Section16　問題2で追加
+            todos.map((todo) => {
+              if (todo.id === editTodoId) {
+                return data
+              }
+              return todo
+            })
+          )
+          setEditTodoId('')         //Section16　問題2で追加
 
         })
     },
@@ -76,16 +76,27 @@ export const Top = () => {
 
   const handleEditButtonClick = useCallback(
     (id) => {
-    setIsAddTaskFormOpen(false)
-    setEditTodoId(id)
-    const targetTodo = todos.find((todo) => todo.id === id)
-    setInputValues({
-      title: targetTodo.title,
-      description: targetTodo.description,
+      setIsAddTaskFormOpen(false)
+      setEditTodoId(id)
+      const targetTodo = todos.find((todo) => todo.id === id)
+      setInputValues({
+        title: targetTodo.title,
+        description: targetTodo.description,
+      })
+    },
+    [todos]
+  )
+
+  const handleDeleteButtonClick = useCallback((id) => {
+    axios.delete(`http://localhost:3000/todo/${id}`)
+    .then((response) => {
+      console.log(response)
+
+      setTodos(
+        todos.filter((todo) => todo.id !==id)
+      )
     })
-  },
-  [todos]
-)
+  }, [todos])
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
@@ -117,6 +128,7 @@ export const Top = () => {
               key={todo.id}
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
+              onDeleteButtonClick={handleDeleteButtonClick}
             />
           )
         })}
