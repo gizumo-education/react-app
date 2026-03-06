@@ -41,8 +41,7 @@ export const Top = () => {
     (event) => {
       event.preventDefault()
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-        console.log(data)
-        setTodos([...todos, data])//Section15 問題1で追加。
+        setTodos((prev) => [...prev, data])//Section15 問題1で追加。
         setIsAddTaskFormOpen(false)//Section15 問題2で追加。
         setInputValues({           //Section15 問題3で追加。
           title: '',
@@ -62,15 +61,8 @@ export const Top = () => {
       axios
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
-          console.log(data)
-
-          setTodos(               //Section16　問題1で追加
-            todos.map((todo) => {
-              if (todo.id === editTodoId) {
-                return data
-              }
-              return todo
-            })
+          setTodos((prev) =>             //Section16　問題1で追加
+            prev.map((todo) => (todo.id === editTodoId ? data : todo ))
           )
           setEditTodoId('')         //Section16　問題2で追加
 
@@ -106,11 +98,9 @@ export const Top = () => {
 
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`)  //Section17で追加
-    .then((response) => {
-      console.log(response)
-
-      setTodos(
-        todos.filter((todo) => todo.id !==id)
+    .then(() => {
+      setTodos((prev) =>
+        prev.filter((todo) => todo.id !==id)
       )
     })
     .catch((error) => {
@@ -134,15 +124,9 @@ export const Top = () => {
         isCompleted: todos.find((todo) => todo.id === id).isCompleted,
       })
       .then(({ data }) => {
-        console.log(data)
 
         setTodos(                   //Section18で追加
-          todos.map((todo) => {
-            if (todo.id === id) {
-              return data
-            }
-            return todo
-          })
+          todos.map((todo) => (todo.id === id ? data : todo))
         )
 
       })
@@ -164,11 +148,10 @@ export const Top = () => {
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
-      console.log(data)
       setTodos(data)    //Section14で追加
     })
     .catch((error) => {
-      errorToast(error.massage)
+      errorToast(error.message)
     })
   }, [])
 
