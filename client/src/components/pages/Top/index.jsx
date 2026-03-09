@@ -28,7 +28,7 @@ export const Top = () => {
   }, [])
 
   const handleCancelButtonClick = useCallback(() => {
-    setEditTodoId('')
+    
     setIsAddTaskFormOpen(false)
   }, [])
 
