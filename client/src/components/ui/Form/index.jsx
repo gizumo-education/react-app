@@ -23,24 +23,24 @@ export const Form = memo(({ value, editTodoId, onChange, onCancelClick, onSubmit
           value={value.description}
           onChange={onChange}
           className={styles['input-description']}
-          />
-          </div>
-          <div className={styles['button-area']}>
-            <Button
-              buttonStyle='cancel'
-              className={styles['cancel-button']}
-              onClick={onCancelClick}
-              >
-                キャンセル
-            </Button>
-            <Button
-              type='submit'
-              disabled={!value.title}
-              className={styles['submit-button']}
-            >
-              {editTodoId ? '保存' : 'タスクを追加'}
-            </Button>
-          </div>
+        />
+      </div>
+      <div className={styles['button-area']}>
+        <Button
+          buttonStyle='cancel'
+          className={styles['cancel-button']}
+          onClick={onCancelClick}
+        >
+          キャンセル
+        </Button>
+        <Button
+          type='submit'
+          disabled={!value.title}
+          className={styles['submit-button']}
+        >
+          {editTodoId ? '保存' : 'タスクを追加'}
+        </Button>
+      </div>
     </form>
   )
 })
@@ -48,7 +48,7 @@ export const Form = memo(({ value, editTodoId, onChange, onCancelClick, onSubmit
 Form.displayName = 'Form'
 Form.propTypes = {
   value: PropTypes.shape({
-    title:PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
   }).isRequired,
   editTodoId: PropTypes.string,
