@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { axios } from '../../../utils/axiosConfig'
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem'
@@ -12,7 +14,8 @@ import { errorToast } from '../../../utils/errorToast'
 import styles from './index.module.css'
 
 export const Top = () => {
-  const [todos, setTodos] = useState([])
+  const todos = useRecoilValue(incompleteTodoListState)
+  const setTodos = useSetRecoilState(todoState)
   const [editTodoId, setEditTodoId] = useState('')
 
   const [inputValues, setInputValues] = useState({
@@ -28,7 +31,7 @@ export const Top = () => {
   }, [])
 
   const handleCancelButtonClick = useCallback(() => {
-    
+
     setIsAddTaskFormOpen(false)
   }, [])
 
@@ -48,11 +51,11 @@ export const Top = () => {
           description: '',
         })
       })
-      .catch((error) => {
-        errorToast(error.message)
-      })
+        .catch((error) => {
+          errorToast(error.message)
+        })
     },
-    [inputValues]
+    [setTodos, inputValues]
   )
 
   const handleEditedTodoSubmit = useCallback(
@@ -62,7 +65,7 @@ export const Top = () => {
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
           setTodos((prev) =>             //Section16　問題1で追加
-            prev.map((todo) => (todo.id === editTodoId ? data : todo ))
+            prev.map((todo) => (todo.id === editTodoId ? data : todo))
           )
           setEditTodoId('')         //Section16　問題2で追加
 
@@ -74,13 +77,13 @@ export const Top = () => {
                 '更新するToDoが見つかりませんでした。画面を更新して再度お試しください。'
               )
               break
-              default:
+            default:
               errorToast(error.message)
               break
           }
         })
     },
-    [editTodoId, inputValues]
+    [setTodos, editTodoId, inputValues]
   )
 
   const handleEditButtonClick = useCallback(
@@ -98,62 +101,62 @@ export const Top = () => {
 
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`)  //Section17で追加
-    .then(() => {
-      setTodos((prev) =>
-        prev.filter((todo) => todo.id !==id)
-      )
-    })
-    .catch((error) => {
-      switch (error.statusCode){
-        case 404:
-          errorToast(
-            '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
-          )
-          break
+      .then(() => {
+        setTodos((prev) =>
+          prev.filter((todo) => todo.id !== id)
+        )
+      })
+      .catch((error) => {
+        switch (error.statusCode) {
+          case 404:
+            errorToast(
+              '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+            )
+            break
           default:
             errorToast(error.message)
             break
-      }
-    })
-  }, [todos])
+        }
+      })
+  }, [setTodos])
 
   const handleToggleButtonClick = useCallback(
     (id) => {
       axios
-      .patch(`http://localhost:3000/todo/${id}/completion-status`, {
-        isCompleted: todos.find((todo) => todo.id === id).isCompleted,
-      })
-      .then(({ data }) => {
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+          isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+        })
+        .then(({ data }) => {
 
-        setTodos(                   //Section18で追加
-          todos.map((todo) => (todo.id === id ? data : todo))
-        )
+          setTodos(                   //Section18で追加
+            todos.map((todo) => (todo.id === id ? data : todo))
+          )
 
-      })
-      .catch((error) => {
-        switch (error.statusCode){
-          case 404:
-            errorToast(
-              '完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。'
-            )
-            break
+        })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
             default:
               errorToast(error.message)
               break
-        }
-      })
+          }
+        })
     },
-    [todos]
+    [todos, setTodos]
   )
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       setTodos(data)    //Section14で追加
     })
-    .catch((error) => {
-      errorToast(error.message)
-    })
-  }, [])
+      .catch((error) => {
+        errorToast(error.message)
+      })
+  }, [setTodos])
 
   return (
     <Layout>
