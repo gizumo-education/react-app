@@ -43,14 +43,15 @@ export const Top = () => {
   const handleCreateTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
-      axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-        setTodos((prev) => [...prev, data])//Section15 問題1で追加。
-        setIsAddTaskFormOpen(false)//Section15 問題2で追加。
-        setInputValues({           //Section15 問題3で追加。
-          title: '',
-          description: '',
+      axios.post('http://localhost:3000/todo', inputValues)
+        .then(({ data }) => {
+          setTodos((prev) => [...prev, data])//Section15 問題1で追加。
+          setIsAddTaskFormOpen(false)//Section15 問題2で追加。
+          setInputValues({           //Section15 問題3で追加。
+            title: '',
+            description: '',
+          })
         })
-      })
         .catch((error) => {
           errorToast(error.message)
         })
@@ -150,9 +151,10 @@ export const Top = () => {
   )
 
   useEffect(() => {
-    axios.get('http://localhost:3000/todo').then(({ data }) => {
-      setTodos(data)    //Section14で追加
-    })
+    axios.get('http://localhost:3000/todo')
+      .then(({ data }) => {
+        setTodos(data)    //Section14で追加
+      })
       .catch((error) => {
         errorToast(error.message)
       })

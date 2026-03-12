@@ -29,9 +29,10 @@ export const Completed = () => {
 
 
   useEffect(() => {
-    axios.get('http://localhost:3000/todo').then(({ data }) => {
-      setTodos(data)    //Section14で追加
-    })
+    axios.get('http://localhost:3000/todo')
+      .then(({ data }) => {
+        setTodos(data)    //Section14で追加
+      })
       .catch((error) => {
         errorToast(error.message)
       })

@@ -31,38 +31,36 @@ export const ListItem = memo(
         )}
         <div className={styles.task}>
           <div
-          className={`${styles.title} ${
-            todo.isCompleted ? styles['task-completed'] : ''
-          }`}
+            className={`${styles.title} ${todo.isCompleted ? styles['task-completed'] : ''
+              }`}
           >
-          {todo.title}
+            {todo.title}
           </div>
           {todo.description && (
             <div
-            className={`${styles.description} ${
-              todo.isCompleted ? styles['task-completed'] : ''
-            }`}
+              className={`${styles.description} ${todo.isCompleted ? styles['task-completed'] : ''
+                }`}
             >
-            {todo.description}
+              {todo.description}
             </div>
           )}
         </div>
         <div className={styles['task-action']}>
           {!todo.isCompleted && (
-          <>
-          <Button
-            buttonStyle='icon-only'
-            onClick={() => onEditButtonClick(todo.id)}
-          >
-            <Icon iconName='edit' color='indigo-blue' size='medium' />
-          </Button>
-          <Button
-            buttonStyle='icon-only'
-            onClick={() => onDeleteButtonClick(todo.id)}
-          >
-            <Icon iconName='trash' color='indigo-blue' size='medium' />
-          </Button>
-          </>
+            <>
+              <Button
+                buttonStyle='icon-only'
+                onClick={() => onEditButtonClick(todo.id)}
+              >
+                <Icon iconName='edit' color='indigo-blue' size='medium' />
+              </Button>
+              <Button
+                buttonStyle='icon-only'
+                onClick={() => onDeleteButtonClick(todo.id)}
+              >
+                <Icon iconName='trash' color='indigo-blue' size='medium' />
+              </Button>
+            </>
           )}
         </div>
       </li>
@@ -83,6 +81,6 @@ ListItem.propTypes = {
 }
 
 ListItem.defaultProps = {
-  onEditButtonClick: () => {},
-  onDeleteButtonClick: () => {},
+  onEditButtonClick: () => { },
+  onDeleteButtonClick: () => { },
 }
