@@ -96,6 +96,21 @@ export const Top = () => {
   )
 
   // ↓ 追加
+  const handleDeleteButtonClick = useCallback((id) => {
+    
+    axios
+      .delete(`http://localhost:3000/todo/${id}`)
+      .then(({ data }) => {
+        console.log(data)
+
+        // 削除したToDoを一覧から取り除く
+        setTodos((prev) => prev.filter((todo) => todo.id !== id))
+      })
+  }, [])
+  // ↑ 追加
+
+
+  // ↓ 追加
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target
     setInputValues((prev) => ({ ...prev, [name]: value }))
@@ -131,8 +146,11 @@ export const Top = () => {
           }
           // ↑ 追加
 
-          return <ListItem key={todo.id} todo={todo}
+          return <ListItem
+            key={todo.id}
+            todo={todo}
             onEditButtonClick={handleEditButtonClick} // 追加
+            onDeleteButtonClick={handleDeleteButtonClick} // 追加
           />
         })}
         <li>
