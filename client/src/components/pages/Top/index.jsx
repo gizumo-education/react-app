@@ -97,7 +97,6 @@ export const Top = () => {
 
   // ↓ 追加
   const handleDeleteButtonClick = useCallback((id) => {
-    
     axios
       .delete(`http://localhost:3000/todo/${id}`)
       .then(({ data }) => {
@@ -108,6 +107,27 @@ export const Top = () => {
       })
   }, [])
   // ↑ 追加
+
+  const handleToggleButtonClick = useCallback(
+    (id) => {
+      axios
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+          isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+        })
+        .then(({ data }) => {
+          console.log(data)
+
+          // ToDoの完了・未完了の切り替え後のToDoの完了・未完了の状態を画面に反映させてください
+          setTodos((prev) =>
+            prev.map((todo) =>
+              todo.id === id ? data : todo
+            )
+          )
+        })
+    },
+
+    [todos]
+  )
 
 
   // ↓ 追加
@@ -151,6 +171,7 @@ export const Top = () => {
             todo={todo}
             onEditButtonClick={handleEditButtonClick} // 追加
             onDeleteButtonClick={handleDeleteButtonClick} // 追加
+            onToggleButtonClick={handleToggleButtonClick} // 追加
           />
         })}
         <li>

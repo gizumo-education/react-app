@@ -2,33 +2,68 @@
 
 import PropTypes from 'prop-types'
 import { memo } from 'react'
-import { Button } from '../Button' // 追加
-import { Icon } from '../Icon' // 追加
-
+import { Button } from '../Button'
+import { Icon } from '../Icon'
 import styles from './index.module.css'
 
-export const ListItem = memo(({ todo, onEditButtonClick, onDeleteButtonClick }) => {
-  return (
-    <li className={styles['list-item']}>
-      <div className={styles.task}>
-        <div className={styles.title}>{todo.title}</div>
-        {todo.description && (
-          <div className={styles.description}>{todo.description}</div>
-        )}
-      </div>
+export const ListItem = memo(
+  ({ todo, onEditButtonClick, onDeleteButtonClick, onToggleButtonClick }) => {
+    return (
+      <li className={styles['list-item']}>
 
-      <div className={styles['task-action']}>
+        {todo.isCompleted ? (
+          <Button
+            buttonStyle='icon-only'
+            className={styles['complete-button']}
+            onClick={() => onToggleButtonClick(todo.id)}
+          >
+            <Icon iconName='check' size='large' color='orange' />
+          </Button>
+        ) : (
+          <Button
+            buttonStyle='icon-only'
+            className={styles['complete-button']}
+            onClick={() => onToggleButtonClick(todo.id)}
+          >
+            <Icon
+              iconName='circle'
+              size='medium'
+              className={styles['circle-icon']}
+            />
+          </Button>
+        )}
+
+        <div className={styles.task}>
+          <div
+            className={`${styles.title} ${
+              todo.isCompleted ? styles['task-completed'] : ''
+            }`}
+          >
+            {todo.title}
+          </div>
+
+          {todo.description && (
+            <div
+              className={`${styles.description} ${
+                todo.isCompleted ? styles['task-completed'] : ''
+              }`}
+            >
+              {todo.description}
+            </div>
+          )}
+        </div>
+
         <Button
           buttonStyle='icon-only'
           onClick={() => onDeleteButtonClick(todo.id)}
         >
           <Icon iconName='trash' color='indigo-blue' size='medium' />
         </Button>
-      </div>
-    </li>
-  )
-})
 
+      </li>
+    )
+  }
+)
 
 ListItem.propTypes = {
   todo: PropTypes.shape({
@@ -39,4 +74,6 @@ ListItem.propTypes = {
   }).isRequired,
   onEditButtonClick: PropTypes.func.isRequired,
   onDeleteButtonClick: PropTypes.func.isRequired,
+  onToggleButtonClick: PropTypes.func.isRequired,
 }
+
