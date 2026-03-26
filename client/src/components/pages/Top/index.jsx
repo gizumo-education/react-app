@@ -12,7 +12,9 @@ import { Form } from '../../ui/Form' // 追加
 import styles from './index.module.css'
 
 export const Top = () => {
-  const [todos, setTodos] = useState([]) // 追加
+  const [todos, setTodos] = useState([])
+  const [editTodoId, setEditTodoId] = useState('') // 追加
+
   const [inputValues, setInputValues] = useState({
     title: '',
     description: '',
@@ -21,17 +23,20 @@ export const Top = () => {
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false) // 追加
 
   const handleAddTaskButtonClick = useCallback(() => {
+    setInputValues({ title: '', description: '' }) // 追加
+    setEditTodoId('') // 追加
     setIsAddTaskFormOpen(true)
   }, [])
 
   const handleCancelButtonClick = useCallback(() => {
+    setEditTodoId('') // 追加
     setIsAddTaskFormOpen(false)
   }, [])
 
-  // ↓ 追加
   const handleCreateTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
+
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
         console.log(data)
 
@@ -52,6 +57,44 @@ export const Top = () => {
   )
   // ↑ 追加
 
+  const handleEditedTodoSubmit = useCallback(
+    (event) => {
+      event.preventDefault()
+
+      axios
+        .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
+        .then(({ data }) => {
+          console.log(data)
+
+          // ① 編集したToDoを一覧に反映
+          setTodos((prev) =>
+            prev.map((todo) =>
+              todo.id === editTodoId ? data : todo
+            )
+          )
+
+          // ② 編集フォームを非表示にする
+          setEditTodoId('')
+
+        })
+    },
+    [editTodoId, inputValues]
+  )
+
+  const handleEditButtonClick = useCallback((id) => {
+    setIsAddTaskFormOpen(false) // 追加
+    setEditTodoId(id)
+
+    const targetTodo = todos.find((todo) => todo.id === id)
+    setInputValues({
+      title: targetTodo.title,
+      description: targetTodo.description,
+    })
+
+  },
+    [todos]
+  )
+
   // ↓ 追加
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target
@@ -71,7 +114,26 @@ export const Top = () => {
       <h1 className={styles.heading}>ToDo一覧</h1>
       <ul className={styles.list}>
         {todos.map((todo) => {
-          return <ListItem key={todo.id} todo={todo} />
+
+          // ↓ 追加
+          if (editTodoId === todo.id) {
+            return (
+              <li key={todo.id}>
+                <Form
+                  value={inputValues}
+                  editTodoId={editTodoId} // 追加
+                  onChange={handleInputChange}
+                  onCancelClick={handleCancelButtonClick}
+                  onSubmit={handleEditedTodoSubmit} // 追加
+                />
+              </li>
+            )
+          }
+          // ↑ 追加
+
+          return <ListItem key={todo.id} todo={todo}
+            onEditButtonClick={handleEditButtonClick} // 追加
+          />
         })}
         <li>
 
