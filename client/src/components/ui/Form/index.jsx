@@ -3,7 +3,6 @@
 import PropTypes from 'prop-types'
 import { memo } from 'react'
 import { Button } from '../Button'
-
 import styles from './index.module.css'
 
 export const Form = memo(({ value, editTodoId, onChange, onCancelClick, onSubmit }) => {

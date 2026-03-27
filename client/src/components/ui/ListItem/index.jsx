@@ -44,7 +44,6 @@ export const ListItem = memo(
             </div>
           )}
         </div>
-        {/* 編集ボタン */}
         <div className={styles['task-action']}>
           <Button
             buttonStyle='icon-only'
@@ -52,7 +51,6 @@ export const ListItem = memo(
           >
             <Icon iconName='edit' color='indigo-blue' size='medium' />
           </Button>
-
           <Button
             buttonStyle='icon-only'
             onClick={() => onDeleteButtonClick(todo.id)}
@@ -60,7 +58,6 @@ export const ListItem = memo(
             <Icon iconName='trash' color='indigo-blue' size='medium' />
           </Button>
         </div>
-
       </li>
     )
   }
