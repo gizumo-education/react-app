@@ -34,31 +34,32 @@ export const ListItem = memo(
         )}
 
         <div className={styles.task}>
-          <div
-            className={`${styles.title} ${
-              todo.isCompleted ? styles['task-completed'] : ''
-            }`}
-          >
+          <div className={`${styles.title} ${todo.isCompleted ? styles['task-completed'] : ''}`}>
             {todo.title}
           </div>
 
           {todo.description && (
-            <div
-              className={`${styles.description} ${
-                todo.isCompleted ? styles['task-completed'] : ''
-              }`}
-            >
+            <div className={`${styles.description} ${todo.isCompleted ? styles['task-completed'] : ''}`}>
               {todo.description}
             </div>
           )}
         </div>
+        {/* 編集ボタン */}
+        <div className={styles['task-action']}>
+          <Button
+            buttonStyle='icon-only'
+            onClick={() => onEditButtonClick(todo.id)}
+          >
+            <Icon iconName='edit' color='indigo-blue' size='medium' />
+          </Button>
 
-        <Button
-          buttonStyle='icon-only'
-          onClick={() => onDeleteButtonClick(todo.id)}
-        >
-          <Icon iconName='trash' color='indigo-blue' size='medium' />
-        </Button>
+          <Button
+            buttonStyle='icon-only'
+            onClick={() => onDeleteButtonClick(todo.id)}
+          >
+            <Icon iconName='trash' color='indigo-blue' size='medium' />
+          </Button>
+        </div>
 
       </li>
     )

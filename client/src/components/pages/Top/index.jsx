@@ -9,10 +9,13 @@ import { Button } from '../../ui/Button' // 追加
 import { Icon } from '../../ui/Icon' // 追加
 import { Form } from '../../ui/Form' // 追加
 
+import { errorToast } from '../../../utils/errorToast' // 追加
+
 import styles from './index.module.css'
 
 export const Top = () => {
   const [todos, setTodos] = useState([])
+
   const [editTodoId, setEditTodoId] = useState('') // 追加
 
   const [inputValues, setInputValues] = useState({
@@ -37,7 +40,7 @@ export const Top = () => {
     (event) => {
       event.preventDefault()
 
-      axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
+      axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues).then(({ data }) => {
         console.log(data)
 
         // ① 追加したToDoが一覧に表示される
@@ -52,6 +55,11 @@ export const Top = () => {
           description: '',
         })
       })
+        // ↓ 追加
+        .catch((error) => {
+          errorToast(error.message)
+        })
+      // ↑ 追加
     },
     [inputValues]
   )
@@ -60,11 +68,9 @@ export const Top = () => {
   const handleEditedTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
-
-      axios
-        .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
-        .then(({ data }) => {
+        axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
           console.log(data)
+
 
           // ① 編集したToDoを一覧に反映
           setTodos((prev) =>
@@ -77,6 +83,23 @@ export const Top = () => {
           setEditTodoId('')
 
         })
+
+        // ↓ 追加
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '更新するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+            // ↓ 追加
+            default:
+              errorToast(error.message)
+              break
+            // ↑ 追加
+          }
+        })
+      // ↑ 追加
     },
     [editTodoId, inputValues]
   )
@@ -105,6 +128,23 @@ export const Top = () => {
         // 削除したToDoを一覧から取り除く
         setTodos((prev) => prev.filter((todo) => todo.id !== id))
       })
+      // ↓ 追加
+      .catch((error) => {
+        switch (error.statusCode) {
+          case 404:
+            errorToast(
+              '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+            )
+            break
+          // ↓ 追加
+          default:
+            errorToast(error.message)
+            break
+          // ↑ 追加
+        }
+      })
+    // ↑ 追加
+
   }, [])
   // ↑ 追加
 
@@ -124,6 +164,22 @@ export const Top = () => {
             )
           )
         })
+        // ↓ 追加
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+            // ↓ 追加
+            default:
+              errorToast(error.message)
+              break
+            // ↑ 追加
+          }
+        })
+      // ↑ 追加
     },
 
     [todos]
@@ -137,11 +193,18 @@ export const Top = () => {
   }, [])
   // ↑ 追加
 
+  // 一覧表示
+
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       console.log(data)
       setTodos(data)
     })
+      // ↓ 追加
+      .catch((error) => {
+        errorToast(error.message)
+      })
+    // ↑ 追加
   }, [])
 
   return (
