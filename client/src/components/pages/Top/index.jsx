@@ -34,6 +34,7 @@ export const Top = () => {
       event.preventDefault()
       axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
         console.log(data)
+        // 追加
         setTodos((prev) => [...prev, data])
         setIsAddTaskFormOpen(false)
         setInputValues({
@@ -48,11 +49,14 @@ export const Top = () => {
     [inputValues]
   )
 
+
+  // 編集
   const handleEditedTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
       axios
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
+        // 一部の更新リクエスト アンサーファースト
         .then(({ data }) => {
           console.log(data)
           setTodos((prev) =>
@@ -90,6 +94,7 @@ export const Top = () => {
     [todos]
   )
 
+  // 削除
   const handleDeleteButtonClick = useCallback((id) => {
     axios
       .delete(`http://localhost:3000/todo/${id}`)
@@ -111,6 +116,7 @@ export const Top = () => {
       })
   }, [])
 
+  // 切り替え
   const handleToggleButtonClick = useCallback(
     (id) => {
       axios
@@ -143,10 +149,12 @@ export const Top = () => {
 
 
   const handleInputChange = useCallback((event) => {
+    console.log(event)
     const { name, value } = event.target
     setInputValues((prev) => ({ ...prev, [name]: value }))
   }, [])
 
+  // 一覧
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       console.log(data)
@@ -156,6 +164,9 @@ export const Top = () => {
         errorToast(error.message)
       })
   }, [])
+
+  // 依存配列を空にすることで、こうなる
+  // 例えば、、アンサーファースト
 
   return (
     <Layout>
