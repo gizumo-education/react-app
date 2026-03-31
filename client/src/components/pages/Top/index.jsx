@@ -13,6 +13,11 @@ import styles from './index.module.css'
 export const Top = () => {
   const todos = useRecoilValue(incompleteTodoListState)
   const setTodos = useSetRecoilState(todoState)
+  const [inputValues, setInputValues] = useState({
+  title: '',
+  description: '',
+})
+const [editTodoId, setEditTodoId] = useState('')
 
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
