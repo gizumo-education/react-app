@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import { memo } from 'react'
-
 import styles from './index.module.css'
 
 export const Button = memo(({ className, buttonStyle, children, ...props }) => {
