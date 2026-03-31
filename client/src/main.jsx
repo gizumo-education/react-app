@@ -7,8 +7,8 @@ import './styles/reset.css'
 import './styles/globals.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <>
+  <RecoilRoot>
     <ToastContainer />
     <RouterProvider router={router} />
-  </>
+  </RecoilRoot>
 )
