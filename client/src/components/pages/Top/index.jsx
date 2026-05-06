@@ -1,11 +1,30 @@
+import { useEffect, useState } from 'react'
+import { axios } from '../../../utils/axiosConfig.js'
 import { Layout } from '../../ui/Layout'
+import { ListItem } from '../../ui/ListItem' 
 
 import styles from './index.module.css'
 
 export const Top = () => {
+  const [todos, setTodos] = useState([])
+
+  useEffect(() =>{
+    axios.get('http://localhost:3000/todo')
+    .then(({data})=>{
+      setTodos(data)//追加
+    })
+
+  },[])
+
+
   return (
     <Layout>
       <h1 className={styles.heading}>ToDo一覧</h1>
+      <ul className={styles.list}>
+        {todos.map((todo)=>{
+          return<ListItem key={todo.id} todo={todo}/>
+        })}
+      </ul>
     </Layout>
   )
 }
