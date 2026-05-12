@@ -54,11 +54,11 @@ export const Top = () => {
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
           console.log(data)
-          setTodos(todos.map((c) => {
-            if(c.id === editTodoId) {
+          setTodos(todos.map((oldValue) => {
+            if(oldValue.id === editTodoId) {
               return data
             }
-            return c
+            return oldValue
           }))
           setEditTodoId('')
         })
@@ -79,9 +79,16 @@ export const Top = () => {
     [todos]
   )
 
-  const handleDeleteButtonClick = useCallback((id) => {
-
-  }, [])
+  const handleDeleteButtonClick = useCallback(
+    (id) => {
+      axios
+        .delete(`http://localhost:3000/todo/${id}`)
+        .then(({ data }) => {
+          setTodos(data)
+        })
+    },
+    [todos]
+  )
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
