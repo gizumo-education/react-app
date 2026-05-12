@@ -31,6 +31,7 @@ export const Top = () => {
     const { name, value } = event.target
     setInputValues((prev) => ({ ...prev, [name]: value }))
   }, [])
+
   const handleCreateTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
@@ -44,6 +45,25 @@ export const Top = () => {
       })
     },
     [inputValues]
+  )
+
+  const handleEditedTodoSubmit = useCallback(
+    (event) => {
+      event.preventDefault()
+      axios
+        .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
+        .then(({ data }) => {
+          console.log(data)
+          setTodos(todos.map((c) => {
+            if(c.id === editTodoId) {
+              return data
+            }
+            return c
+          }))
+          setEditTodoId('')
+        })
+    },
+    [editTodoId, inputValues, todos]
   )
 
   const handleEditButtonClick = useCallback(
@@ -78,6 +98,7 @@ export const Top = () => {
                   editTodoId={editTodoId}
                   onChange={handleInputChange}
                   onCancelClick={handleCancelButtonClick}
+                  onSubmit={handleEditedTodoSubmit}
                 />
               </li>
             )
