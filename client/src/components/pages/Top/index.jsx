@@ -75,7 +75,8 @@ export const Top = () => {
               break
             default:
               errorToast(error.message)
-              break          }
+              break
+          }
         })
     },
     [editTodoId, inputValues, todos]
