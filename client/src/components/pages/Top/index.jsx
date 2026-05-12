@@ -54,11 +54,11 @@ export const Top = () => {
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
           console.log(data)
-          setTodos(todos.map((oldValue) => {
-            if(oldValue.id === editTodoId) {
+          setTodos(todos.map((todo) => {
+            if(todo.id === editTodoId) {
               return data
             }
-            return oldValue
+            return todo
           }))
           setEditTodoId('')
         })
