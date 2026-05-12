@@ -97,7 +97,12 @@ export const Top = () => {
           isCompleted: todos.find((todo) => todo.id === id).isCompleted,
         })
         .then(({ data }) => {
-          console.log(data)
+          setTodos(todos.map((todo) => {
+            if(todo.id === id) {
+              return data
+            }
+            return todo
+          }))
         })
     },
     [todos]
