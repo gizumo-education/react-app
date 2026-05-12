@@ -79,6 +79,10 @@ export const Top = () => {
     [todos]
   )
 
+  const handleDeleteButtonClick = useCallback((id) => {
+
+  }, [])
+
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       setTodos(data)
@@ -108,6 +112,7 @@ export const Top = () => {
               key={todo.id}
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
+              onDeleteButtonClick={handleDeleteButtonClick}
             />
           )
         })}
