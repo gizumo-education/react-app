@@ -59,10 +59,7 @@ export const Top = () => {
         .then(({ data }) => {
           console.log(data)
           setTodos(todos.map((todo) => {
-            if(todo.id === editTodoId) {
-              return data
-            }
-            return todo
+            return todo.id === editTodoId ? data : todo
           }))
           setEditTodoId('')
         })
@@ -126,10 +123,7 @@ export const Top = () => {
         })
         .then(({ data }) => {
           setTodos(todos.map((todo) => {
-            if(todo.id === id) {
-              return data
-            }
-            return todo
+            return todo.id === id ? data : todo
           }))
         })
         .catch((error) => {
