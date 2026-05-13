@@ -30,7 +30,7 @@ export const Top = () => {
   }, [])
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target
-    setInputValues((prev) => ({ ...prev, [name]: value }))
+    setInputValues((prev) => ({ ...prev, [name]: value } ))
   }, [])
 
   const handleCreateTodoSubmit = useCallback(
