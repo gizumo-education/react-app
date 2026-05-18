@@ -39,6 +39,7 @@ export const Form = memo(({ value, editTodoId, onChange, onCancelClick, onSubmit
           className={styles['submit-button']}
         >
            {editTodoId ? '保存' : 'タスクを追加'}
+           {/*条件 ? trueのとき : falseのとき*/}
         </Button>
       </div>
     </form>
@@ -52,9 +53,9 @@ Form.propTypes = {
     description: PropTypes.string.isRequired,
   }).isRequired,
   editTodoId: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-  onCancelClick: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,//ToDoの追加フォームに入力された値をstateに反映させる関数を受け取る
+  onCancelClick: PropTypes.func.isRequired,//キャンセルボタンがクリックされたときの処理を行う関数を受け取る
+  onSubmit: PropTypes.func.isRequired,//フォームが送信されたときの処理を行う関数を受け取る
 }
 
 Form.defaultProps = {

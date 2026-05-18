@@ -9,7 +9,7 @@ export const Button = memo(({ className, buttonStyle, children, ...props }) => {
       className={`${styles.button} ${styles[`${buttonStyle}`]} ${className}`}
       {...props}
     >
-      {children}
+      {children} {/*Iconコンポーネントや、タスク追加のテキストなどが入る*/}
     </button>
   )
 })

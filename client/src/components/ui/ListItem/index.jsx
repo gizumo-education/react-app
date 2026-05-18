@@ -7,26 +7,26 @@ import { Icon } from '../Icon'
 export const ListItem = memo(({ todo, onEditButtonClick, onDeleteButtonClick, onToggleButtonClick }) => {
   return (
     <li className={styles['list-item']}>
-      {todo.isCompleted ? (
+      {todo.isCompleted ? (//todoが完了している場合、チェックアイコンを表示する
         <Button
           buttonStyle='icon-only'
           className={styles['complete-button']}
           onClick={() => onToggleButtonClick(todo.id)}
         >
           <Icon
-            iconName='check'
+            iconName='check'//chekアイコン
             size='large'
             color='orange'
           />
         </Button>
-      ) : (
+      ) : (//todoが完了していない場合、空の丸アイコンを表示する
         <Button
           buttonStyle='icon-only'
           className={styles['complete-button']}
           onClick={() => onToggleButtonClick(todo.id)}
         >
           <Icon
-            iconName='circle'
+            iconName='circle'//circleアイコン
             size='medium'
             className={styles['circle-icon']}
           />
@@ -37,7 +37,7 @@ export const ListItem = memo(({ todo, onEditButtonClick, onDeleteButtonClick, on
           className={`${styles.title} ${todo.isCompleted ? styles['task-completed'] : ''
             }`}
         >
-          {todo.title}
+          {todo.title} 
         </div>
         {todo.description && (
           <div
@@ -50,27 +50,22 @@ export const ListItem = memo(({ todo, onEditButtonClick, onDeleteButtonClick, on
       </div>
 
       <div className={styles['task-action']}>
-        <Button
-          buttonStyle='icon-only'
-          onClick={() => onEditButtonClick(todo.id)}
-        >
-          <Icon
-            iconName='edit'
-            color='indigo-blue'
-            size='medium'
-          />
-        </Button>
-
-        <Button
-          buttonStyle='icon-only'
-          onClick={() => onDeleteButtonClick(todo.id)}
-        >
-          <Icon
-            iconName='trash'
-            color='indigo-blue'
-            size='medium'
-          />
-        </Button>
+        {!todo.isCompleted && (
+          <>
+            <Button
+              buttonStyle='icon-only'
+              onClick={() => onEditButtonClick(todo.id)}
+            >
+              <Icon iconName='edit' color='indigo-blue' size='medium' />
+            </Button>
+            <Button
+              buttonStyle='icon-only'
+              onClick={() => onDeleteButtonClick(todo.id)}
+            >
+              <Icon iconName='trash' color='indigo-blue' size='medium' />
+            </Button>
+          </>
+        )}
       </div>
     </li>
   )
@@ -84,7 +79,9 @@ ListItem.propTypes = {
     description: PropTypes.string,
     isCompleted: PropTypes.bool.isRequired,
   }).isRequired,
-  onEditButtonClick: PropTypes.func.isRequired,
-  onDeleteButtonClick: PropTypes.func.isRequired,
   onToggleButtonClick: PropTypes.func.isRequired,
+}
+ListItem.defaultProps = {
+  onEditButtonClick: () => { },
+  onDeleteButtonClick: () => { },
 }
