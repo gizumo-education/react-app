@@ -13,7 +13,7 @@ export const Top = () => {
   const [todos, setTodos] = useState([])
   const [inputValues, setInputValues] = useState({
     title: '',
-    desctiprion: ''
+    description: ''
   })
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
