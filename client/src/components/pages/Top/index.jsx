@@ -20,6 +20,9 @@ export const Top = () => {
   const handleAddTaskButtonClick = useCallback(() => {
     setIsAddTaskFormOpen(true)
   })
+  const handleCancelButtonClick = useCallback(() => {
+    setIsAddTaskFormOpen(false)
+  })
   
   // レンダリング時にToDo一覧を取得
   useEffect(() => {
@@ -38,7 +41,7 @@ export const Top = () => {
         })}
         <li>
           {isAddTaskFormOpen ? (
-            <Form value={inputValues} />
+            <Form value={inputValues} onCancelClick={handleCancelButtonClick} />
           ) : (
             <Button
               buttonStyle='indigo-blue'
