@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { axios } from '../../../utils/axiosConfig'
 
 import { Layout } from '../../ui/Layout'
@@ -16,6 +16,10 @@ export const Top = () => {
     desctiprion: ''
   })
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
+
+  const handleAddTaskButtonClick = useCallback(() => {
+    setIsAddTaskFormOpen(true)
+  })
   
   // レンダリング時にToDo一覧を取得
   useEffect(() => {
@@ -36,14 +40,18 @@ export const Top = () => {
           {isAddTaskFormOpen ? (
             <Form value={inputValues} />
           ) : (
-            <Button buttonStyle='indigo-blue' className={styles['add-task']}>
-            <Icon
-              iconName='plus'
-              color='orange'
-              size='medium'
-              className={styles['plus-icon']}
-            />
-            タスクを追加
+            <Button
+              buttonStyle='indigo-blue'
+              onClick={handleAddTaskButtonClick}
+              className={styles['add-task']}
+            >
+              <Icon
+                iconName='plus'
+                color='orange'
+                size='medium'
+                className={styles['plus-icon']}
+              />
+              タスクを追加
           </Button>
           )}
         </li>
