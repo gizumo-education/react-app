@@ -13,7 +13,7 @@ export const Top = () => {
   const [todos, setTodos] = useState([])
   const [inputValues, setInputValues] = useState({
     title: '',
-    description: ''
+    description: '',
   })
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
@@ -27,12 +27,12 @@ export const Top = () => {
   // 入力値を受け取ってinputValuesに反映
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target
-    setInputValues((prev) => ({...prev, [name]: value}))
+    setInputValues((prev) => ({ ...prev, [name]: value }))
   })
 
   const handleCreateTodoSubmit = useCallback((event) => {
     event.preventDefault()
-    axios.post('http://localhost:3000/todo', inputValues).then(({data}) => {
+    axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
       console.log(data)
       setIsAddTaskFormOpen(false)
       setInputValues('')
@@ -75,7 +75,7 @@ export const Top = () => {
                 className={styles['plus-icon']}
               />
               タスクを追加
-          </Button>
+            </Button>
           )}
         </li>
       </ul>
