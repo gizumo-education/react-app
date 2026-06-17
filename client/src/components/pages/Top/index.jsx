@@ -10,6 +10,10 @@ import styles from './index.module.css'
 
 export const Top = () => {
   const [todos, setTodos] = useState([])
+  const [inputValues, setInputValues] = useState({
+    title: '',
+    desctiprion: ''
+  })
   
   // レンダリング時にToDo一覧を取得
   useEffect(() => {
