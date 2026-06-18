@@ -45,11 +45,20 @@ export const Top = () => {
 
   const handleEditedTodoSubmit = useCallback((event) => {
     event.preventDefault()
-    console.log(event)
-    axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues).then(({ data }) => {
-      console.log(data)
+    // console.log(event)
+    axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
+    .then(({ data }) => {
+      setTodos(
+        todos.map((todo) => {
+          if (todo.id === editTodoId) {
+            return data
+          }
+          return todo
+        })
+      )
     })
-  }, [editTodoId, inputValues])
+    setEditTodoId('')
+  }, [editTodoId, inputValues, todos])
 
   const handleEditButtonClick = useCallback((id) => {
     setIsAddTaskFormOpen(false)
