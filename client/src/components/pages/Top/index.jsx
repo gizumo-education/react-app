@@ -11,6 +11,7 @@ import styles from './index.module.css'
 
 export const Top = () => {
   const [todos, setTodos] = useState([])
+  const [editTodoId, setEditTodoId] = useState([])
   const [inputValues, setInputValues] = useState({
     title: '',
     description: '',
@@ -18,17 +19,20 @@ export const Top = () => {
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
   const handleAddTaskButtonClick = useCallback(() => {
+    setInputValues({ title: '', description: '' })
     setIsAddTaskFormOpen(true)
+    setEditTodoId('')
   })
   const handleCancelButtonClick = useCallback(() => {
     setIsAddTaskFormOpen(false)
+    setEditTodoId('')
   })
 
   // 入力値を受け取ってinputValuesに反映
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target
     setInputValues((prev) => ({ ...prev, [name]: value }))
-  })
+  }, [])
 
   const handleCreateTodoSubmit = useCallback((event) => {
     event.preventDefault()
@@ -37,7 +41,17 @@ export const Top = () => {
       setIsAddTaskFormOpen(false)
       setInputValues('')
     })
-  })
+  }, [inputValues])
+
+  const handleEditButtonClick = useCallback((id) => {
+    setIsAddTaskFormOpen(false)
+    setEditTodoId(id)
+    const targetTodo = todos.find((todo) => todo.id === id)
+    setInputValues({
+      title: targetTodo.title,
+      description: targetTodo.description,
+    })
+  }, [todos])
 
   // レンダリング時にToDo一覧を取得
   useEffect(() => {
@@ -52,7 +66,23 @@ export const Top = () => {
       <h1 className={styles.heading}>ToDo一覧</h1>
       <ul className={styles.list}>
         {todos.map((todo) => {
-          return <ListItem key={todo.id} todo={todo} />
+          if (editTodoId === todo.id) {
+            return (
+              <li key={todo.id}>
+                <Form
+                  value={inputValues}
+                  onChange={handleInputChange}
+                  onCancelClick={handleCancelButtonClick}
+                  onSubmit={handleCreateTodoSubmit}
+                />
+              </li>
+            )
+          }
+          return <ListItem
+            key={todo.id}
+            todo={todo}
+            onEditButtonClick={handleEditButtonClick}
+          />
         })}
         <li>
           {isAddTaskFormOpen ? (
