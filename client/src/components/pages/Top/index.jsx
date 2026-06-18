@@ -37,9 +37,10 @@ export const Top = () => {
   // 新規作成処理
   const handleCreateTodoSubmit = useCallback((event) => {
     event.preventDefault()
-    axios.post('http://localhost:3000/todo', inputValues).then(() => {
+    axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
       setIsAddTaskFormOpen(false)
       setInputValues('')
+      setTodos((prevTodos) => [...prevTodos, data])
     })
   }, [inputValues])
   
@@ -69,10 +70,7 @@ export const Top = () => {
   // 削除処理
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
-      console.log(data)
-      setTodos((prevTodos) =>
-        prevTodos.filter((todo) => todo.id !== id)
-      )
+      setTodos(data)
     })
   }, [])
 
@@ -81,7 +79,7 @@ export const Top = () => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       setTodos(data)
     })
-  }, [todos])
+  }, [])
 
   return (
     <Layout>
