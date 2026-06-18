@@ -44,6 +44,9 @@ export const Top = () => {
       setInputValues('')
       setTodos((prevTodos) => [...prevTodos, data])
     })
+    .catch((error) => {
+      errorToast(error.message)
+    })
   }, [inputValues])
   
   // 編集画面の表示
@@ -72,6 +75,7 @@ export const Top = () => {
             errorToast('更新するToDoが見つかりませんでした。画面を更新して再度お試しください。')
             break
           default:
+            errorToast(error.message)
             break
         }
       })
@@ -89,6 +93,7 @@ export const Top = () => {
           errorToast('削除するToDoが見つかりませんでした。画面を更新して再度お試しください。')
           break
         default:
+          errorToast(error.message)
           break
       }
     })
@@ -110,6 +115,7 @@ export const Top = () => {
           errorToast('完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。')
           break
         default:
+          errorToast(error.message)
           break
       }
     })
@@ -119,6 +125,9 @@ export const Top = () => {
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       setTodos(data)
+    })
+    .catch((error) => {
+      errorToast(error.message)
     })
   }, [])
 
