@@ -34,6 +34,6 @@ ListItem.prototypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string,
     isCompleted: PropTypes.bool.isRequired,
-    onEditButtonClick: PropTypes.func.isRequired,
-  })
+  }).isRequired,
+  onEditButtonClick: PropTypes.func.isRequired,
 }

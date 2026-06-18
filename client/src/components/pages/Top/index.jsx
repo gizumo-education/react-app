@@ -37,7 +37,6 @@ export const Top = () => {
   const handleCreateTodoSubmit = useCallback((event) => {
     event.preventDefault()
     axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-      console.log(data)
       setIsAddTaskFormOpen(false)
       setInputValues('')
     })
@@ -96,11 +95,13 @@ export const Top = () => {
               </li>
             )
           }
-          return <ListItem
-            key={todo.id}
-            todo={todo}
-            onEditButtonClick={handleEditButtonClick}
-          />
+          return (
+            <ListItem
+              key={todo.id}
+              todo={todo}
+              onEditButtonClick={handleEditButtonClick}
+            />
+          )
         })}
         <li>
           {isAddTaskFormOpen ? (
