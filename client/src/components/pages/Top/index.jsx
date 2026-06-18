@@ -22,11 +22,11 @@ export const Top = () => {
     setInputValues({ title: '', description: '' })
     setIsAddTaskFormOpen(true)
     setEditTodoId('')
-  })
+  }, [])
   const handleCancelButtonClick = useCallback(() => {
     setIsAddTaskFormOpen(false)
     setEditTodoId('')
-  })
+  } ,[])
 
   // 入力値を受け取ってinputValuesに反映
   const handleInputChange = useCallback((event) => {
@@ -34,25 +34,16 @@ export const Top = () => {
     setInputValues((prev) => ({ ...prev, [name]: value }))
   }, [])
 
+  // 新規作成処理
   const handleCreateTodoSubmit = useCallback((event) => {
     event.preventDefault()
-    axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
+    axios.post('http://localhost:3000/todo', inputValues).then(() => {
       setIsAddTaskFormOpen(false)
       setInputValues('')
     })
   }, [inputValues])
-
-  const handleEditedTodoSubmit = useCallback((event) => {
-    event.preventDefault()
-    axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
-    .then(({ data }) => {
-      setTodos(todos.map((todo) =>
-        todo.id === data.id ? data : todo
-      ))
-    })
-    setEditTodoId('')
-  }, [editTodoId, inputValues, todos])
-
+  
+  // 編集画面の表示
   const handleEditButtonClick = useCallback((id) => {
     setIsAddTaskFormOpen(false)
     setEditTodoId(id)
@@ -62,12 +53,30 @@ export const Top = () => {
       description: targetTodo.description,
     })
   }, [todos])
+  
+    // 更新処理
+    const handleEditedTodoSubmit = useCallback((event) => {
+      event.preventDefault()
+      axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
+      .then(({ data }) => {
+        setTodos(todos.map((todo) =>
+          todo.id === data.id ? data : todo
+        ))
+      })
+      setEditTodoId('')
+    }, [editTodoId, inputValues, todos])
 
+  // 削除処理
   const handleDeleteButtonClick = useCallback((id) => {
-    console.log(id)
+    axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
+      console.log(data)
+      setTodos((prevTodos) =>
+        prevTodos.filter((todo) => todo.id !== id)
+      )
+    })
   }, [])
 
-  // レンダリング時にToDo一覧を取得
+  // 一覧取得表示
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
       setTodos(data)
