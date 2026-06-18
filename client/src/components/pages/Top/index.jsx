@@ -44,7 +44,6 @@ export const Top = () => {
 
   const handleEditedTodoSubmit = useCallback((event) => {
     event.preventDefault()
-    // console.log(event)
     axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
     .then(({ data }) => {
       setTodos(todos.map((todo) =>
@@ -64,10 +63,13 @@ export const Top = () => {
     })
   }, [todos])
 
+  const handleDeleteButtonClick = useCallback((id) => {
+    console.log(id)
+  }, [])
+
   // レンダリング時にToDo一覧を取得
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
-      // console.log(data)
       setTodos(data)
     })
   }, [todos])
@@ -95,6 +97,7 @@ export const Top = () => {
               key={todo.id}
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
+              onDeleteButtonClick={handleDeleteButtonClick}
             />
           )
         })}
