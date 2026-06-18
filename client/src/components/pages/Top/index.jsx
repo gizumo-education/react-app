@@ -43,6 +43,14 @@ export const Top = () => {
     })
   }, [inputValues])
 
+  const handleEditedTodoSubmit = useCallback((event) => {
+    event.preventDefault()
+    console.log(event)
+    axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues).then(({ data }) => {
+      console.log(data)
+    })
+  }, [editTodoId, inputValues])
+
   const handleEditButtonClick = useCallback((id) => {
     setIsAddTaskFormOpen(false)
     setEditTodoId(id)
@@ -71,10 +79,10 @@ export const Top = () => {
               <li key={todo.id}>
                 <Form
                   value={inputValues}
-                  // onChange={handleInputChange}
+                  onChange={handleInputChange}
                   editTodoId={editTodoId}
                   onCancelClick={handleCancelButtonClick}
-                  onSubmit={handleCreateTodoSubmit}
+                  onSubmit={handleEditedTodoSubmit}
                 />
               </li>
             )
