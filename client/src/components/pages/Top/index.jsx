@@ -7,6 +7,8 @@ import { Button } from '../../ui/Button'
 import { Icon } from '../../ui/Icon'
 import { Form } from '../../ui/Form'
 
+import {errorToast} from '../../../utils/errorToast'
+
 import styles from './index.module.css'
 
 export const Top = () => {
@@ -64,6 +66,15 @@ export const Top = () => {
           todo.id === data.id ? data : todo
         ))
       })
+      .catch((error) => {
+        switch (error.statusCode) {
+          case 404:
+            errorToast('更新するToDoが見つかりませんでした。画面を更新して再度お試しください。')
+            break
+          default:
+            break
+        }
+      })
       setEditTodoId('')
     }, [editTodoId, inputValues, todos])
 
@@ -71,6 +82,15 @@ export const Top = () => {
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
       setTodos(data)
+    })
+    .catch((error) => {
+      switch (error.statusCode) {
+        case 404:
+          errorToast('削除するToDoが見つかりませんでした。画面を更新して再度お試しください。')
+          break
+        default:
+          break
+      }
     })
   }, [])
 
@@ -83,6 +103,15 @@ export const Top = () => {
       setTodos(todos.map((todo) =>
         todo.id === data.id ? data : todo
       ))
+    })
+    .catch((error) => {
+      switch (error.statusCode) {
+        case 404:
+          errorToast('完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。')
+          break
+        default:
+          break
+      }
     })
   }, [todos])
 
