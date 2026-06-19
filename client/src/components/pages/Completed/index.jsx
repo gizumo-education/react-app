@@ -55,8 +55,7 @@ export const Completed = () => {
   return (
     <Layout>
       <h1 className={styles.heading}>完了済み一覧</h1>
-      {/* {todos.length ? ( */}
-      {todos ? (
+      {todos.length ? (
         <ul className={styles.list}>
           {todos.map((todo) => (
             <ListItem
