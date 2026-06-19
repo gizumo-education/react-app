@@ -13,7 +13,7 @@ import styles from './index.module.css'
 
 export const Top = () => {
   const [todos, setTodos] = useState([])
-  const [editTodoId, setEditTodoId] = useState(0)
+  const [editTodoId, setEditTodoId] = useState('')
   const [inputValues, setInputValues] = useState({
     title: '',
     description: '',
