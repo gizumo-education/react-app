@@ -14,7 +14,6 @@ import {errorToast} from '../../../utils/errorToast'
 import styles from './index.module.css'
 
 export const Top = () => {
-  // const [todos, setTodos] = useState([])
   const todos = useRecoilValue(incompleteTodoListState)
   const setTodos = useSetRecoilState(todoState)
   const [editTodoId, setEditTodoId] = useState('')
