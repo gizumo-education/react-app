@@ -9,19 +9,23 @@ export const todoState = atom({
 export const completedTodoListState = selector({
   key: 'completedTodoListState',
   get: ({ get }) => {
-
-  },
+    const todos = get(todoState)
+    return (
+      todos.filter((todo) => 
+        todo.isCompleted ? todo : ''
+      )
+    )
+  }
 })
 
 export const incompleteTodoListState = selector({
   key: 'incompleteTodoListState',
   get: ({ get }) => {
-    // return get
-  const todos = get(todoState)
-  return (
-    todos.filter((todo) => 
-    todo.isCompleted ? '' : todo)
-  )
-    // const todos = get(todoState.filter((todo) => ))
-  },
+    const todos = get(todoState)
+    return (
+      todos.filter((todo) => 
+        todo.isCompleted ? '' : todo
+      )
+    )
+  }
 })
