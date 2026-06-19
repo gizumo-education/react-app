@@ -13,7 +13,7 @@ import styles from './index.module.css'
 
 export const Top = () => {
   const [todos, setTodos] = useState([])
-  const [editTodoId, setEditTodoId] = useState([])
+  const [editTodoId, setEditTodoId] = useState(0)
   const [inputValues, setInputValues] = useState({
     title: '',
     description: '',
@@ -65,9 +65,12 @@ export const Top = () => {
       event.preventDefault()
       axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
       .then(({ data }) => {
-        setTodos(todos.map((todo) =>
-          todo.id === data.id ? data : todo
-        ))
+        setTodos((prevTodos) =>
+          prevTodos.map((todo) =>
+            todo.id === data.id ? data : todo
+          )
+        )
+        setInputValues('')
       })
       .catch((error) => {
         switch (error.statusCode) {
@@ -80,7 +83,7 @@ export const Top = () => {
         }
       })
       setEditTodoId('')
-    }, [editTodoId, inputValues, todos])
+    }, [editTodoId, inputValues])
 
   // 削除処理
   const handleDeleteButtonClick = useCallback((id) => {
@@ -105,9 +108,12 @@ export const Top = () => {
       isCompleted: todos.find((todo) => todo.id === id).isCompleted,
     })
     .then(({ data }) => {
-      setTodos(todos.map((todo) =>
-        todo.id === data.id ? data : todo
-      ))
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo.id === data.id ? data : todo
+        )
+      )
+      setInputValues('')
     })
     .catch((error) => {
       switch (error.statusCode) {
