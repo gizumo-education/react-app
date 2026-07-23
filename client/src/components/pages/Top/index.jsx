@@ -6,6 +6,7 @@ import { ListItem } from '../../ui/ListItem' // 追加
 import { Button } from '../../ui/Button' // 追加
 import { Icon } from '../../ui/Icon' // 追加
 import { Form } from '../../ui/Form' // 追加
+import { errorToast } from '../../../utils/errorToast' // 追加
 
 import styles from './index.module.css'
 
@@ -36,15 +37,20 @@ export const Top = () => {
   const handleCreateTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
-      axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-        console.log(data)
-        setTodos((prev) => [...prev, data])
-        setIsAddTaskFormOpen(false)
-        setInputValues({
-          title: '',
-          description: '',
+      axios
+        .post('http://localhost:3000/todo', inputValues)
+        .then(({ data }) => {
+          console.log(data)
+          setTodos((prev) => [...prev, data])
+          setIsAddTaskFormOpen(false)
+          setInputValues({
+            title: '',
+            description: '',
+          })
         })
-      })
+        .catch((error) => {
+          errorToast(error.message)
+        })
     },
     [inputValues]
   )
@@ -60,6 +66,18 @@ export const Top = () => {
             )
           )
           setEditTodoId('')
+        })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '更新するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+            default:
+              errorToast(error.message)
+              break
+          }
         })
     },
     [editTodoId, inputValues]
@@ -77,13 +95,27 @@ export const Top = () => {
     [todos] // 依存配列にtodosを追加
   )
   const handleDeleteButtonClick = useCallback((id) => {
-    axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
-      console.log(data)
-      setTodos((prev) => {
-        const isDeleted = (todo) => todo.id === id
-        return prev.filter((todo) => !isDeleted(todo))
+    axios
+      .delete(`http://localhost:3000/todo/${id}`)
+      .then(({ data }) => {
+        console.log(data)
+        setTodos((prev) => {
+          const isDeleted = (todo) => todo.id === id
+          return prev.filter((todo) => !isDeleted(todo))
+        })
       })
-    })
+      .catch((error) => {
+        switch (error.statusCode) {
+          case 404:
+            errorToast(
+              '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+            )
+            break
+          default:
+            errorToast(error.message)
+            break
+        }
+      })
   }, [])
   const handleToggleButtonClick = useCallback(
     (id) => {
@@ -103,15 +135,32 @@ export const Top = () => {
             prev.map((todo) => (todo.id === id ? { ...todo, ...data } : todo))
           )
         })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+            default:
+              errorToast(error.message)
+              break
+          }
+        })
     },
     [todos]
   )
   // 以下のuseEffectの処理を追加
   useEffect(() => {
-    axios.get('http://localhost:3000/todo').then(({ data }) => {
-      console.log(data)
-      setTodos(data)
-    })
+    axios
+      .get('http://localhost:3000/todo')
+      .then(({ data }) => {
+        console.log(data)
+        setTodos(data)
+      })
+      .catch((error) => {
+        errorToast(error.message)
+      })
   }, [])
 
   return (
