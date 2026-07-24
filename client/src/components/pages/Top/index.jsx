@@ -19,20 +19,13 @@ export const Top = () => {
   })
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
-  // フォーム内のボタンをクリックしたとき
-  const handleAddTaskButtonClick = useCallback(() => {
-    setInputValues({ title: '', description: '' })
-    setEditTodoId('')
-    setIsAddTaskFormOpen(true)
-  }, [])
-
-  // フォーム内に入力しているとき
+  // フォーム内のキャンセルボタンを押した時
   const handleCancelButtonClick = useCallback(() => {
     setEditTodoId('')
     setIsAddTaskFormOpen(false)
   }, [])
 
-  // 追加機能
+  // フォーム内に入力しているとき
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target
     setInputValues((prev) => {
@@ -40,6 +33,14 @@ export const Top = () => {
     })
   }, [])
 
+  // 追加機能。追加フォームを開くとき
+  const handleAddTaskButtonClick = useCallback(() => {
+    setInputValues({ title: '', description: '' })
+    setEditTodoId('')
+    setIsAddTaskFormOpen(true)
+  }, [])
+
+  // タスクを追加ボタン
   const handleCreateTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
@@ -59,7 +60,22 @@ export const Top = () => {
     },
     [inputValues]
   )
-  // 編集機能
+
+  // 編集機能// 編集ボタンを押した時
+  const handleEditButtonClick = useCallback(
+    (id) => {
+      setIsAddTaskFormOpen(false)
+      setEditTodoId(id)
+      const targetTodo = todos.find((todo) => todo.id === id)
+      setInputValues({
+        title: targetTodo.title,
+        description: targetTodo.description,
+      })
+    },
+    [todos]
+  )
+
+  // 編集フォームの保存ボタン
   const handleEditedTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
@@ -89,19 +105,6 @@ export const Top = () => {
     [editTodoId, inputValues]
   )
 
-  const handleEditButtonClick = useCallback(
-    (id) => {
-      setIsAddTaskFormOpen(false)
-      setEditTodoId(id)
-      const targetTodo = todos.find((todo) => todo.id === id)
-      setInputValues({
-        title: targetTodo.title,
-        description: targetTodo.description,
-      })
-    },
-    [todos]
-  )
-
   // 削除機能
   const handleDeleteButtonClick = useCallback((id) => {
     axios
@@ -127,7 +130,7 @@ export const Top = () => {
       })
   }, [])
 
-  // 完了未完了時
+  // 完了未完了時の切り替えるとき
   const handleToggleButtonClick = useCallback(
     (id) => {
       axios
