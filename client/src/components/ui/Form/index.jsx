@@ -53,7 +53,7 @@ Form.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
   }).isRequired,
-  editTodoId: PropTypes.string, // 追加
+  editTodoId: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   onCancelClick: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,

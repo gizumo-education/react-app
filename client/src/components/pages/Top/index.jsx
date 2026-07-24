@@ -1,46 +1,51 @@
-import { useEffect, useState, useCallback } from 'react' // 追加
-import { axios } from '../../../utils/axiosConfig' // 追加
+import { useEffect, useState, useCallback } from 'react'
+import { axios } from '../../../utils/axiosConfig'
 
 import { Layout } from '../../ui/Layout'
-import { ListItem } from '../../ui/ListItem' // 追加
-import { Button } from '../../ui/Button' // 追加
-import { Icon } from '../../ui/Icon' // 追加
-import { Form } from '../../ui/Form' // 追加
-import { errorToast } from '../../../utils/errorToast' // 追加
+import { ListItem } from '../../ui/ListItem'
+import { Button } from '../../ui/Button'
+import { Icon } from '../../ui/Icon'
+import { Form } from '../../ui/Form'
+import { errorToast } from '../../../utils/errorToast'
 
 import styles from './index.module.css'
 
 export const Top = () => {
-  const [todos, setTodos] = useState([]) // 追加
-  const [editTodoId, setEditTodoId] = useState('') // 追加
+  const [todos, setTodos] = useState([])
+  const [editTodoId, setEditTodoId] = useState('')
   const [inputValues, setInputValues] = useState({
     title: '',
     description: '',
   })
-  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false) // 追加
+  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
+
+  // フォーム内のボタンをクリックしたとき
   const handleAddTaskButtonClick = useCallback(() => {
-    setInputValues({ title: '', description: '' }) // 追加
-    setEditTodoId('') // 追加
+    setInputValues({ title: '', description: '' })
+    setEditTodoId('')
     setIsAddTaskFormOpen(true)
   }, [])
+
+  // フォーム内に入力しているとき
   const handleCancelButtonClick = useCallback(() => {
-    setEditTodoId('') // 追加
+    setEditTodoId('')
     setIsAddTaskFormOpen(false)
   }, [])
+
+  // 追加機能
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target
     setInputValues((prev) => {
-      console.log(prev)
       return { ...prev, [name]: value }
     })
   }, [])
+
   const handleCreateTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
       axios
         .post('http://localhost:3000/todo', inputValues)
         .then(({ data }) => {
-          console.log(data)
           setTodos((prev) => [...prev, data])
           setIsAddTaskFormOpen(false)
           setInputValues({
@@ -54,6 +59,7 @@ export const Top = () => {
     },
     [inputValues]
   )
+  // 編集機能
   const handleEditedTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
@@ -82,9 +88,10 @@ export const Top = () => {
     },
     [editTodoId, inputValues]
   )
+
   const handleEditButtonClick = useCallback(
     (id) => {
-      setIsAddTaskFormOpen(false) // 追加
+      setIsAddTaskFormOpen(false)
       setEditTodoId(id)
       const targetTodo = todos.find((todo) => todo.id === id)
       setInputValues({
@@ -92,8 +99,10 @@ export const Top = () => {
         description: targetTodo.description,
       })
     },
-    [todos] // 依存配列にtodosを追加
+    [todos]
   )
+
+  // 削除機能
   const handleDeleteButtonClick = useCallback((id) => {
     axios
       .delete(`http://localhost:3000/todo/${id}`)
@@ -117,6 +126,8 @@ export const Top = () => {
         }
       })
   }, [])
+
+  // 完了未完了時
   const handleToggleButtonClick = useCallback(
     (id) => {
       axios
@@ -124,13 +135,6 @@ export const Top = () => {
           isCompleted: todos.find((todo) => todo.id === id).isCompleted,
         })
         .then(({ data }) => {
-          // console.log(
-          //   'todo:',
-          //   todos.find((todo) => todo.id === id),
-          //   'data:',
-          //   data
-          // )
-          console.log(data)
           setTodos((prev) =>
             prev.map((todo) => (todo.id === id ? { ...todo, ...data } : todo))
           )
@@ -150,12 +154,12 @@ export const Top = () => {
     },
     [todos]
   )
-  // 以下のuseEffectの処理を追加
+
+  // 一覧表示機能
   useEffect(() => {
     axios
       .get('http://localhost:3000/todo')
       .then(({ data }) => {
-        console.log(data)
         setTodos(data)
       })
       .catch((error) => {
@@ -173,10 +177,10 @@ export const Top = () => {
               <li key={todo.id}>
                 <Form
                   value={inputValues}
-                  editTodoId={editTodoId} // 追加
+                  editTodoId={editTodoId}
                   onChange={handleInputChange}
                   onCancelClick={handleCancelButtonClick}
-                  onSubmit={handleEditedTodoSubmit} // 追加
+                  onSubmit={handleEditedTodoSubmit}
                 />
               </li>
             )
@@ -186,8 +190,8 @@ export const Top = () => {
               key={todo.id}
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
-              onDeleteButtonClick={handleDeleteButtonClick} // 追加
-              onToggleButtonClick={handleToggleButtonClick} // 追加
+              onDeleteButtonClick={handleDeleteButtonClick}
+              onToggleButtonClick={handleToggleButtonClick}
             />
           )
         })}
