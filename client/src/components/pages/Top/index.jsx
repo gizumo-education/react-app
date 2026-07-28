@@ -19,13 +19,13 @@ export const Top = () => {
   })
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
 
-  // フォーム内のキャンセルボタンを押した時
+  // フォーム内のキャンセルボタンを押した時(編集をやめるとき)
   const handleCancelButtonClick = useCallback(() => {
     setEditTodoId('')
     setIsAddTaskFormOpen(false)
   }, [])
 
-  // フォーム内に入力しているとき
+  // フォーム内に入力しているとき(編集も)
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target
     setInputValues((prev) => {
@@ -61,7 +61,7 @@ export const Top = () => {
     [inputValues]
   )
 
-  // 編集機能// 編集ボタンを押した時
+  // 編集機能// 編集ボタンが押された時
   const handleEditButtonClick = useCallback(
     (id) => {
       setIsAddTaskFormOpen(false)
