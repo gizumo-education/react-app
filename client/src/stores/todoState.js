@@ -7,8 +7,9 @@ export const todoState = atom({
 
 export const completedTodoListState = selector({
   key: 'completedTodoListState',
-  get: () => {
-    return []
+  get: ({get}) => {
+    const list = get(todoState)
+    return list.filter((todo) => todo.isCompleted)
   },
 })
 
