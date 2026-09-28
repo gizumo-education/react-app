@@ -5,6 +5,7 @@ import { ListItem } from '../../ui/ListItem'
 import { Button } from '../../ui/Button'
 import { Icon } from '../../ui/Icon'
 import { Form } from '../../ui/Form'
+import { errorToast } from '../../../utils/errorToast'
 
 
 
@@ -51,6 +52,9 @@ export const Top = () => {
             description: '',
           })
         })
+        .catch((error) => {
+          errorToast(error.message)
+        })
     },
     [inputValues]
   )
@@ -69,6 +73,16 @@ export const Top = () => {
           })
           setEditTodoId('')
         })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast('更新するToDoが見つかりませんでした。画面を更新して再度お試しください。')
+              break
+            default:
+              errorToast(error.message)
+              break
+          }
+        })
     },
     [editTodoId, inputValues]
   )
@@ -85,13 +99,6 @@ export const Top = () => {
     [todos]
   )
 
-  useEffect(() => {
-    axios.get('http://localhost:3000/todo').then(({ data }) => {
-      console.log(data)
-      setTodos(data)
-    })
-  }, [])
-
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`).then((response) => {
       console.log(response)
@@ -101,14 +108,25 @@ export const Top = () => {
         })
       })
     })
-  },[])
+      .catch((error) => {
+        switch (error.statusCode) {
+          case 404:
+            errorToast('削除するToDoが見つかりませんでした。画面を更新して再度お試しください。')
+            break
+          default:
+            errorToast(error.message)
+            break
+        }
+      })
+  }, [])
 
   const handleToggleButtonClick = useCallback(
     (id) => {
       axios
-        .patch(`http://localhost:3000/todo/${id}/completion-status`, {isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+        .patch(`http://localhost:3000/todo/${id}/completion-status`, {
+          isCompleted: todos.find((todo) => todo.id === id).isCompleted,
         })
-        .then(({data}) => {
+        .then(({ data }) => {
           console.log(data)
           setTodos((prevTodos) => {
             return prevTodos.map((todo) => {
@@ -116,9 +134,29 @@ export const Top = () => {
             })
           })
         })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast('完了・未完了を切り替えるToDoが見つかりませんでした。画面を更新して再度お試しください。')
+              break
+            default:
+              errorToast(error.message)
+              break
+          }
+        })
     },
     [todos]
   )
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/todo').then(({ data }) => {
+      console.log(data)
+      setTodos(data)
+    })
+      .catch((error) => {
+        errorToast(error.message)
+      })
+  }, [])
 
   return (
     <Layout>
