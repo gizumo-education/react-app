@@ -14,32 +14,73 @@ export const Top = () => {
   const [todos, setToDos] = useState([]);
   const [inputValues, setInputValues] = useState(INPUT_CLEAR);
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false);
+  const [editTodoId, setEditTodoId] = useState('');
 
   const handleAddTaskButtonClick = useCallback(() => {
     setIsAddTaskFormOpen(true);
+    setInputValues(INPUT_CLEAR);
+    setEditTodoId('');
   }, []);
   const handleCancelButtonClick = useCallback(() => {
     setIsAddTaskFormOpen(false);
     setInputValues(INPUT_CLEAR);
+    setEditTodoId('');
   }, []);
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target
     setInputValues((prev) => ({ ...prev, [name]: value }))
   }, []);
 
-  const handleSubmit = useCallback((event) => {
-    event.preventDefault();
+  const handleCreateTodoSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      axios
+        .post(TODO_URL, inputValues)
+        .then(({ data }) => {
+          setToDos((prev) => [...prev, data]);
+          handleCancelButtonClick();
+        })
+        .catch((error) => {
+          console.error('ToDoの追加に失敗：', error);
+        });
+    },
+    [inputValues, handleCancelButtonClick]
+  );
 
-    axios
-      .post(TODO_URL, inputValues)
-      .then(({ data }) => {
-        setToDos((prev) => [...prev, data]);
-        handleCancelButtonClick();
+  const handleEditedTodoSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      axios
+        .patch(`${TODO_URL}/${editTodoId}`, inputValues)
+        .then(({ data }) => {
+          setToDos((prev) => {
+            return prev.map((todo) =>
+              todo.id === editTodoId ? data : todo
+            );
+          }
+          );
+          handleCancelButtonClick();
+        })
+        .catch((error) => {
+          console.error('Todoの編集に失敗：', error);
+        });
+    },
+    [editTodoId, inputValues]
+  )
+
+  const handleEditButtonClick = useCallback(
+    (id) => {
+      setIsAddTaskFormOpen(false);
+      setEditTodoId(id);
+
+      const targetTodo = todos.find((todo) => todo.id === id);
+      setInputValues({
+        title: targetTodo.title,
+        description: targetTodo.description,
       })
-      .catch((error) => {
-        console.error('ToDoの追加に失敗：', error);
-      });
-  }, [inputValues, handleCancelButtonClick]);
+    },
+    [todos]
+  );
 
   useEffect(() => {
     axios
@@ -56,16 +97,37 @@ export const Top = () => {
     <Layout>
       <h1 className={styles.heading}>ToDo一覧</h1>
       <ul className={styles.list}>
-        {todos.map((todo) => (
-          <ListItem key={todo.id} todo={todo} />
-        ))}
+        {todos.map((todo) => {
+
+          if (editTodoId === todo.id) {
+            return (
+              <li key={todo.id}>
+                <Form
+                  value={inputValues}
+                  editTodoId={editTodoId}
+                  onChange={handleInputChange}
+                  onCancelClick={handleCancelButtonClick}
+                  onSubmit={handleEditedTodoSubmit}
+                >
+                </Form>
+              </li>
+            )
+          }
+          return (
+            <ListItem
+              key={todo.id}
+              todo={todo}
+              onEditButtonClick={handleEditButtonClick}
+            />
+          )
+        })}
         <li>
           {isAddTaskFormOpen ? (
             <Form
               value={inputValues}
               onCancelClick={handleCancelButtonClick}
               onChange={handleInputChange}
-              onSubmit={handleSubmit}
+              onSubmit={handleCreateTodoSubmit}
             />
           ) : (
             <Button
