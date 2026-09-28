@@ -47,6 +47,20 @@ export const Top = () => {
     [inputValues, handleCancelButtonClick]
   );
 
+  const handleDeleteButtonClick = useCallback(
+    (id) => {
+      axios
+        .delete(`${TODO_URL}/${id}`)
+        .then(() => {
+          setToDos((prev) => prev.filter((todo) => todo.id !== id));
+        })
+        .catch((error) => {
+          console.error('Todoの削除に失敗：', error);
+        });
+    },
+    []
+  );
+
   const handleEditedTodoSubmit = useCallback(
     (event) => {
       event.preventDefault();
@@ -118,6 +132,7 @@ export const Top = () => {
               key={todo.id}
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
+              onDeleteButtonClick={handleDeleteButtonClick}
             />
           )
         })}
