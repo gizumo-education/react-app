@@ -61,6 +61,21 @@ export const Top = () => {
     []
   );
 
+  const handleToggleButtonClick = useCallback(
+    (id) => {
+      axios
+        .patch(`${TODO_URL}/${id}/completion-status`, {
+          isCompleted: todos.find((todo) => todo.id === id).isCompleted,
+        })
+        .then(({ data }) => {
+          setToDos((prev) =>
+            prev.map((todo) => todo.id === id ? data : todo)
+          )
+        })
+    },
+    [todos]
+  )
+
   const handleEditedTodoSubmit = useCallback(
     (event) => {
       event.preventDefault();
@@ -111,7 +126,7 @@ export const Top = () => {
     <Layout>
       <h1 className={styles.heading}>ToDo一覧</h1>
       <ul className={styles.list}>
-        {todos.map((todo) => {
+        {todos.filter(Boolean).map((todo) => {
 
           if (editTodoId === todo.id) {
             return (
@@ -133,6 +148,7 @@ export const Top = () => {
               todo={todo}
               onEditButtonClick={handleEditButtonClick}
               onDeleteButtonClick={handleDeleteButtonClick}
+              onToggleButtonClick={handleToggleButtonClick}
             />
           )
         })}
