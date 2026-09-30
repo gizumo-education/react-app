@@ -12,7 +12,7 @@ const TODO_URL = 'http://localhost:3000/todo';
 const INPUT_CLEAR = { title: '', description: '' };
 
 export const Top = () => {
-  const [todos, setToDos] = useState([]);
+  const [todos, setTodos] = useState([]);
   const [inputValues, setInputValues] = useState(INPUT_CLEAR);
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false);
   const [editTodoId, setEditTodoId] = useState('');
@@ -38,7 +38,7 @@ export const Top = () => {
       axios
         .post(TODO_URL, inputValues)
         .then(({ data }) => {
-          setToDos((prev) => [...prev, data]);
+          setTodos((prev) => [...prev, data]);
           handleCancelButtonClick();
         })
         .catch((error) => {
@@ -53,7 +53,7 @@ export const Top = () => {
       axios
         .delete(`${TODO_URL}/${id}`)
         .then(() => {
-          setToDos((prev) => prev.filter((todo) => todo.id !== id));
+          setTodos((prev) => prev.filter((todo) => todo.id !== id));
         })
         .catch((error) => {
           switch (error.statusCode) {
@@ -78,7 +78,7 @@ export const Top = () => {
           isCompleted: todos.find((todo) => todo.id === id).isCompleted,
         })
         .then(({ data }) => {
-          setToDos((prev) =>
+          setTodos((prev) =>
             prev.map((todo) => todo.id === id ? data : todo)
           )
         })
@@ -98,17 +98,28 @@ export const Top = () => {
     [todos]
   )
 
+  const handleEditButtonClick = useCallback(
+    (id) => {
+      setIsAddTaskFormOpen(false);
+      setEditTodoId(id);
+
+      const targetTodo = todos.find((todo) => todo.id === id);
+      setInputValues({
+        title: targetTodo.title,
+        description: targetTodo.description,
+      })
+    },
+    [todos]
+  );
+
   const handleEditedTodoSubmit = useCallback(
     (event) => {
       event.preventDefault();
       axios
         .patch(`${TODO_URL}/${editTodoId}`, inputValues)
         .then(({ data }) => {
-          setToDos((prev) => {
-            return prev.map((todo) =>
-              todo.id === editTodoId ? data : todo
-            );
-          }
+          setTodos((prev) => prev.map((todo) =>
+            todo.id === editTodoId ? data : todo)
           );
           handleCancelButtonClick();
         })
@@ -128,25 +139,11 @@ export const Top = () => {
     [editTodoId, inputValues]
   )
 
-  const handleEditButtonClick = useCallback(
-    (id) => {
-      setIsAddTaskFormOpen(false);
-      setEditTodoId(id);
-
-      const targetTodo = todos.find((todo) => todo.id === id);
-      setInputValues({
-        title: targetTodo.title,
-        description: targetTodo.description,
-      })
-    },
-    [todos]
-  );
-
   useEffect(() => {
     axios
       .get(TODO_URL)
       .then(({ data }) => {
-        setToDos(data);
+        setTodos(data);
       })
       .catch((error) => {
         errorToast(error.message);
