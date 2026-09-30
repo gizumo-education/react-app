@@ -43,7 +43,7 @@ export const ListItem = memo(({ todo, onEditButtonClick, onDeleteButtonClick, on
           }`}
           >
             {todo.description}
-            </div>
+          </div>
         )}
       </div>
 

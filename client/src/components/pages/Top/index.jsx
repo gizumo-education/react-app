@@ -44,7 +44,6 @@ export const Top = () => {
       event.preventDefault()
       axios.post('http://localhost:3000/todo', inputValues)
         .then(({ data }) => {
-          console.log(data)
           setTodos((prevTodos) => [...prevTodos, data])
           setIsAddTaskFormOpen(false)
           setInputValues({
@@ -65,12 +64,7 @@ export const Top = () => {
       axios
         .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
         .then(({ data }) => {
-          console.log(data)
-          setTodos((prevTodos) => {
-            return prevTodos.map((todo) => {
-              return editTodoId === todo.id ? data : todo
-            })
-          })
+          setTodos((prevTodos) => prevTodos.map((todo) => editTodoId === todo.id ? data : todo))
           setEditTodoId('')
         })
         .catch((error) => {
@@ -101,12 +95,7 @@ export const Top = () => {
 
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`).then((response) => {
-      console.log(response)
-      setTodos((prevTodos) => {
-        return prevTodos.filter((todo) => {
-          return todo.id !== id
-        })
-      })
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id))
     })
       .catch((error) => {
         switch (error.statusCode) {
@@ -127,7 +116,6 @@ export const Top = () => {
           isCompleted: todos.find((todo) => todo.id === id).isCompleted,
         })
         .then(({ data }) => {
-          console.log(data)
           setTodos((prevTodos) => {
             return prevTodos.map((todo) => {
               return todo.id === id ? data : todo
@@ -150,7 +138,6 @@ export const Top = () => {
 
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
-      console.log(data)
       setTodos(data)
     })
       .catch((error) => {
