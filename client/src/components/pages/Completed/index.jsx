@@ -6,7 +6,6 @@ import { Layout } from "../../ui/Layout";
 import { ListItem } from "../../ui/ListItem";
 import { errorToast } from "../../../utils/errorToast";
 import styles from './index.module.css'
-import { isCancel } from "axios";
 
 const TODO_URL = 'http://localhost:3000/todo';
 
