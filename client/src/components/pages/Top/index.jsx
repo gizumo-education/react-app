@@ -43,10 +43,9 @@ export const Top = () => {
         description: '',
       })
       event.preventDefault()
-      .catch((error) => {
+    }).catch((error) => {
         errorToast(error.message)
       })
-    })
   },[inputValues])
   const handleEditedTodoSubmit = useCallback(
     (event) => {
