@@ -32,9 +32,8 @@ export const Top = () => {
     const { name, value } = event.target
     setInputValues((prev) => ({ ...prev, [name]: value }))
   }, [])
-  const handleCreateTodoSubmit = useCallback(() => {
+  const handleCreateTodoSubmit = useCallback((event) => {
     axios.post('http://localhost:3000/todo', inputValues).then(({ data }) => {
-      console.log(data)
       setTodos((prev) => [
         ...prev,data
       ])
@@ -42,7 +41,9 @@ export const Top = () => {
       setInputValues({
         title: '',
         description: '',
-      }).catch((error) => {
+      })
+      event.preventDefault()
+      .catch((error) => {
         errorToast(error.message)
       })
     })
@@ -51,11 +52,14 @@ export const Top = () => {
     (event) => {
       event.preventDefault()
       axios.patch(`http://localhost:3000/todo/${editTodoId}`, inputValues).then(({data}) => {
-        console.log(data)
         setTodos((prev) => 
           prev.map((todo) => (todo.id === editTodoId ? data : todo))
         )
         setEditTodoId('')
+        setInputValues({
+          title: '',
+          description: '',
+        })
       }).catch((error) => {
         switch (error.statusCode) {
           case 404:
@@ -63,6 +67,7 @@ export const Top = () => {
             break
           default:
             errorToast(error.message)
+            break
         }
       })
     },[editTodoId, inputValues]
@@ -78,7 +83,6 @@ export const Top = () => {
   },[todos])
   const handleDeleteButtonClick = useCallback((id) => {
     axios.delete(`http://localhost:3000/todo/${id}`).then(({ data }) => {
-      console.log(data)
       setTodos((prev) => prev.filter((todo) => todo.id !== id))
     }).catch((error) => {
       switch (error.statusCode) {
@@ -96,7 +100,6 @@ export const Top = () => {
       axios.patch(`http://localhost:3000/todo/${id}/completion-status`, {
         isCompleted: todos.find((todo) => todo.id === id).isCompleted,
       }).then(({ data }) => {
-        console.log(data)
         setTodos((prev) =>
           prev.map((todo) => (todo.id === id ? data : todo))
         )
@@ -114,7 +117,6 @@ export const Top = () => {
 
   useEffect (() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
-      console.log(data)
       setTodos(data)
     }).catch((error) => {
       errorToast(error.message)
