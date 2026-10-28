@@ -7,7 +7,7 @@ export const Form = memo(({ value, editTodoId, onChange, onCancelClick, onSubmit
   return (
     <form onSubmit={onSubmit} className={styles.form}>
       <div className={styles['input-field']}>
-        <input 
+        <input
           type='text'
           name='title'
           placeholder='タスク名'
@@ -16,8 +16,8 @@ export const Form = memo(({ value, editTodoId, onChange, onCancelClick, onSubmit
           onChange={onChange}
           className={styles['input-title']}
         />
-        <textarea 
-        name='description'
+        <textarea
+          name='description'
           placeholder='説明'
           value={value.description}
           onChange={onChange}
