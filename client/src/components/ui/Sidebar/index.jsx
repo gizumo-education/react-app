@@ -13,7 +13,7 @@ const NaviList = [
   {
     id: 2,
     lineName: '完了済み',
-    path: 'completed',
+    path: '/completed',
     iconName: 'completeList',
   }
 ]
