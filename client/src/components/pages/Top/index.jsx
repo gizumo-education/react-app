@@ -8,8 +8,10 @@ import { Form } from '../../ui/Form'
 import styles from './index.module.css'
 
 export const Top = () => {
-  // todosをapiで取得してsetTodosでstateを更新
+  // todosをapiで取得してsetTodosでstateを更新する
   const [todos, setTodos] = useState([])
+  // 編集したいtodoのidを取得して、適切にデータを更新する
+  const [editTodoId, setEditTodoId] = useState('')
 
   // formの中のinputを取得してsetInputValuesで更新している
   // useCallbackは依存配列の値が更新されない限り同じ関数を使い続けるので
@@ -31,9 +33,12 @@ export const Top = () => {
   // trueなら入力フォームの中身を表示、falseなら"+タスクを追加"を表示
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
   const handleAddTaskButtonClick = useCallback(() => {
+    setEditTodoId('')
     setIsAddTaskFormOpen(true)
+    setInputValues({ title: '', description: '' })
   }, [])
   const handleCancelButtonClick = useCallback(() => {
+    setEditTodoId('')
     setIsAddTaskFormOpen(false)
   }, [])
 
@@ -43,6 +48,8 @@ export const Top = () => {
   // 1.setTodosで既存の配列に更新データを追加
   // →{data}で取得データの分割代入をしてスプレッド構文で展開した以前のデータと配列を形成している
   // ここで注意すべき処理はsetTodosに配列でdataを渡すこと。mapでtodoを回しているため適切な処理が行なわれない
+  // 2.setIsAddTaskFormOpenをfalseにして、タスク追加フォームを閉じる
+  // 3.InputValuesを空にしたいので更新関数に空文字を渡す
   const handleCreateTodoSubmit = useCallback(
     (event) => {
       event.preventDefault()
@@ -57,6 +64,40 @@ export const Top = () => {
     },
     [inputValues]
   )
+
+  // 同時にタスク追加と編集のフォームが開かないようにしている
+  // またfindで既存のtodos配列からidが一致する最初の項目を取り出して表示に使用している
+  const handleEditButtonClick = useCallback(
+    (id) => {
+      setEditTodoId(id)
+      setIsAddTaskFormOpen(false)
+      const targetTodo = todos.find((todo) => todo.id === id)
+      setInputValues({
+        title: targetTodo.title,
+        description: targetTodo.description,
+      })
+    },
+    [todos]
+  )
+
+  const handleEditedTodoSubmit = useCallback(
+    (event) => {
+      event.preventDefault()
+      axios
+        .patch(`http://localhost:3000/todo/${editTodoId}`, inputValues)
+        .then(({ data }) => {
+          setTodos((prev) => {
+            return prev.map((todo) => {
+              return todo.id === data.id ? data : todo
+            })
+          })
+          setEditTodoId('')
+          setIsAddTaskFormOpen(false)
+        })
+    },
+    [editTodoId, inputValues]
+  )
+
   // 初回マウント時にapiをたたく
   useEffect(() => {
     axios.get('http://localhost:3000/todo').then(({ data }) => {
@@ -70,8 +111,29 @@ export const Top = () => {
       <ul className={styles.list}>
         {/* apiを叩いて返ってきた項目の1つをtodoとして */}
         {/* mapで既存配列に処理を加えて新たな配列を作成 */}
+        {/* stateのidと取得配列のidの一致をみて編集機能の表示・非表示を切り替え */}
+        {/* なのでeditTodoIdが空になると一致するidがないので、自動的にリスト一覧に戻る */}
         {todos.map((todo) => {
-          return <ListItem key={todo.id} todo={todo} />
+          if (editTodoId === todo.id) {
+            return (
+              <li key={todo.id}>
+                <Form
+                  value={inputValues}
+                  editTodoId={editTodoId}
+                  onChange={handleInputChange}
+                  onCancelClick={handleCancelButtonClick}
+                  onSubmit={handleEditedTodoSubmit}
+                />
+              </li>
+            )
+          }
+          return (
+            <ListItem
+              key={todo.id}
+              todo={todo}
+              onEditButtonClick={handleEditButtonClick}
+            />
+          )
         })}
         {isAddTaskFormOpen ? (
           <Form
