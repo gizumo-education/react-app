@@ -33,11 +33,13 @@ export const Top = () => {
 
   // trueなら入力フォームの中身を表示、falseなら"+タスクを追加"を表示
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState(false)
+
   const handleAddTaskButtonClick = useCallback(() => {
     setEditTodoId('')
     setIsAddTaskFormOpen(true)
     setInputValues({ title: '', description: '' })
   }, [])
+
   const handleCancelButtonClick = useCallback(() => {
     setEditTodoId('')
     setIsAddTaskFormOpen(false)
@@ -98,7 +100,7 @@ export const Top = () => {
             })
           })
           setEditTodoId('')
-          setIsAddTaskFormOpen(false)
+          setInputValues({ title: '', description: '' })
         })
         .catch((error) => {
           switch (error.statusCode) {
