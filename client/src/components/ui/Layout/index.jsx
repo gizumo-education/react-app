@@ -6,6 +6,9 @@ import { Sidebar } from '../Sidebar'
 
 import styles from './index.module.css'
 
+// memo()でコンポーネントを囲むと、親が再レンダリングされても
+// 子のpropsが変わっていなければ再レンダリングをスキップできる。
+// 今回ならmainのchildrenは再レンダリングされない
 export const Layout = memo(({ children }) => {
   return (
     <div className={styles.layout}>
@@ -18,7 +21,9 @@ export const Layout = memo(({ children }) => {
   )
 })
 
+// displayNameを使用することでDevToolsでの発見が楽になるらしい
 Layout.displayName = 'Layout'
+// propTypesはReactコンポーネントが受け取るpropsの型や構造をチェックするための仕組み
 Layout.propTypes = {
   children: PropTypes.node.isRequired,
 }

@@ -15,6 +15,7 @@ export const Button = memo(({ className, buttonStyle, children, ...props }) => {
   )
 })
 
+// oneofは指定した複数の値の中から、どれか1つだけを許可する型チェック
 Button.displayName = 'Button'
 Button.propTypes = {
   children: PropTypes.node.isRequired,
