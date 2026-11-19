@@ -34,10 +34,7 @@ export const Sidebar = memo(() => {
             return (
               <li className={styles['list-item']} key={list.id}>
                 <NavLink
-                  // to=""：遷移先のURL
-                  // end：URLが最後まで一致した場合だけisActiveをtrueにする
-                  // isActive：現在のURLと一致しているかを表すboolean
-                  // className：一致していれば active クラスを付ける
+
                   to={list.path}
                   end
                   className={({ isActive }) => {
@@ -46,10 +43,7 @@ export const Sidebar = memo(() => {
                       : [styles['navi-item']]
                   }}
                 >
-                  {/* ① NavLinkが現在のURLと/todosを比較する
-                      ② NavLinkが関数を呼び出す。その際、isActiveを含むオブジェクトを渡す
-                      ③ ({ isActive })で値を受け取る（分割代入）
-                      ④ isActiveを使ってcolorの適用を決める */}
+
                   {({ isActive }) => (
                     <>
                       <Icon

@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { todoState, incompleteTodoListState } from '../../../stores/todoState'
 import { axios } from '../../../utils/axiosConfig'
 import { Layout } from '../../ui/Layout'
 import { ListItem } from '../../ui/ListItem'
@@ -10,7 +12,15 @@ import styles from './index.module.css'
 
 export const Top = () => {
   // todosをapiで取得してsetTodosでstateを更新する
-  const [todos, setTodos] = useState([])
+  // const [todos, setTodos] = useState([])
+  // useRecoilValueは読み取り専用で、useSetRecoilStateは更新専用
+  const todos = useRecoilValue(incompleteTodoListState)
+
+  // AtomをuseSetRecoilStateに渡してsetTodosとしておりdefaultは空配列
+  // 今回のシステムでは初回マウント時にsetTodosがtodoListを取得する
+  // todoState → どのAtomを更新するか指定
+  // setTodos(data) → dataを渡してAtomを更新する
+  const setTodos = useSetRecoilState(todoState)
   // 編集したいtodoのidを取得して、適切にデータを更新する
   const [editTodoId, setEditTodoId] = useState('')
 
@@ -70,7 +80,7 @@ export const Top = () => {
           errorToast(error.message)
         })
     },
-    [inputValues]
+    [setTodos, inputValues]
   )
 
   // 同時にタスク追加と編集のフォームが開かないようにしている
@@ -115,28 +125,31 @@ export const Top = () => {
           }
         })
     },
-    [editTodoId, inputValues]
+    [setTodos, editTodoId, inputValues]
   )
 
-  const handleDeleteButtonClick = useCallback((id) => {
-    axios
-      .delete(`http://localhost:3000/todo/${id}`)
-      .then(({ data }) => {
-        setTodos(data)
-      })
-      .catch((error) => {
-        switch (error.statusCode) {
-          case 404:
-            errorToast(
-              '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
-            )
-            break
-          default:
-            errorToast(error.message)
-            break
-        }
-      })
-  }, [])
+  const handleDeleteButtonClick = useCallback(
+    (id) => {
+      axios
+        .delete(`http://localhost:3000/todo/${id}`)
+        .then(({ data }) => {
+          setTodos(data)
+        })
+        .catch((error) => {
+          switch (error.statusCode) {
+            case 404:
+              errorToast(
+                '削除するToDoが見つかりませんでした。画面を更新して再度お試しください。'
+              )
+              break
+            default:
+              errorToast(error.message)
+              break
+          }
+        })
+    },
+    [setTodos]
+  )
 
   // {isCompleted:isCompleted}を一致するidのtodoに適応
   const handleToggleButtonClick = useCallback(
@@ -165,10 +178,12 @@ export const Top = () => {
           }
         })
     },
-    [todos]
+    [todos, setTodos]
   )
 
-  // 初回マウント時にapiをたたく
+  // 初回マウントおよびsetTodos更新時にDBのtodoを取得する
+  // todoState → どのAtomを更新するか指定
+  // data → Atomをどんな値に更新するか指定
   useEffect(() => {
     axios
       .get('http://localhost:3000/todo')
@@ -178,7 +193,7 @@ export const Top = () => {
       .catch((error) => {
         errorToast(error.message)
       })
-  }, [])
+  }, [setTodos])
 
   return (
     <Layout>

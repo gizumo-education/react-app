@@ -1,3 +1,33 @@
 .heading {
   font-size: 22px;
 }
+
+.list {
+  margin-top: 16px;
+}
+
+.add-task {
+  display: flex;
+  column-gap: 8px;
+  align-items: center;
+  width: 100%;
+  font-size: 14px;
+}
+
+.plus-icon {
+  border-radius: 50%;
+}
+
+.add-task:hover > .plus-icon {
+  background-color: var(--orange);
+}
+
+.add-task:hover > .plus-icon path {
+  color: var(--white);
+}
+
+.no-todo {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
