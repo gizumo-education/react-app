@@ -21,8 +21,6 @@ export const incompleteTodoListState = selector({
   key: 'incompleteTodoListState',
   get: ({ get }) => {
     const todos = get(todoState)
-    return todos.filter((todo) => {
-      return !todo.isCompleted
-    })
+    return todos.filter((todo) => !todo.isCompleted)
   },
 })
